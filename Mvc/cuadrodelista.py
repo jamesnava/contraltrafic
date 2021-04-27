@@ -1,30 +1,24 @@
 
-from tkinter import *
+import cv2
+ 
+cascada=cv2.CascadeClassifier('D:/cara.xml')
 
-def on():
-	if(p.get() != ""):
-		lista.insert(END,p.get())
-		p.set("")
+cap=cv2.VideoCapture(0)
 
-def borrar():
-	b = lista.curselection()
-	if(b != ""):
-		lista.delete(b)
-	
-root = Tk()
-root.geometry("300x300+500+300") # +500+300 es para indicar en que parte de la pantalla se ubicara
-root.title("Crear Caja de lista")
-root.config(bd=10)
+ret,frame=cap.read()
+font=cv2.FONT_HERSHEY_SIMPLEX
+while True:
+	imgM=frame.copy()
+	frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+	contornos=cascada.detectMultiScale(frame,1.3,5)
+	for valores in contornos:
+		(x,y,w,h)=valores
+		cv2.rectangle(imgM,(x,y),(x+w,y+h),(255,0,0),2)
+		cv2.putText(imgM,"Jaime",(x,y),font,0.5,(0,255,0),2)
+	ret,frame=cap.read()
 
-p = StringVar()
-
-Label(root,text='Persona:').pack()
-Entry(root, textvariable=p).pack()
-#Lista
-lista = Listbox(root,activestyle="underline") #activestyle para el estilo de linea al seleccionar
-lista.pack()
-
-Button(root,text="Agregar",command=on).pack()
-Button(root,text="Borrar",command=borrar).pack()
-
-root.mainloop()
+	cv2.imshow('ventana',imgM)
+	if cv2.waitKey(1)==27:
+		break
+cv2.destroyAllWindows()
+cap.release()

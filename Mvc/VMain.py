@@ -10,7 +10,7 @@ import tkinter.messagebox as msgI
 import Fotogramas
 import Report
 #find camera
-import findCamera
+#import findCamera
 
 class VMain:
 	ventana=None
