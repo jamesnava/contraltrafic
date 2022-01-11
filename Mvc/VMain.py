@@ -64,7 +64,7 @@ class VMain:
 	def __init__(self):
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
-		self.ventana.title("SISTEMA DE MONITOREO DE TRAFICO VEHICULAR EN TIEMPO REAL")
+		self.ventana.title("SISTEMA DE CLASIFICACION DE LA PALTA")
 		self.ventana.geometry('1300x650+0+10')
 		#self.ventana.overrideredirect(1)
 		self.ventana.protocol("WM_DELETE_WINDOW",lambda:self.EventoMSalir(self.cap))
@@ -133,15 +133,16 @@ class VMain:
 		#agregando marco principal
 		self.MarcoP=tk.Frame(self.ventana,width=1150,height=570)
 		self.MarcoP.pack()
+		self.MarcoP.pack_propagate()
 
 		self.MarcoP.pack_propagate(False)
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
 		#Label video
-		self.EtiquetaVideo=tk.Label(self.MarcoP,text="PANTALLA PRINCIPAL",font=('Times',28,"bold","italic"),bg="#232928",fg="#fff",bd=20,relief="sunken")
+		self.EtiquetaVideo=tk.Label(self.MarcoP,text="PANTALLA PRINCIPAL",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
 
-		self.EtiquetaVideo.config(width="1000",height="570")
-		self.EtiquetaVideo.pack(padx=5,pady=5)
+		#self.EtiquetaVideo.config(width="20",height="7")
+		self.EtiquetaVideo.grid(column=0,row=0)
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=1150,height=80)
 		self.MarcoBottom.pack(side="bottom")
@@ -150,27 +151,8 @@ class VMain:
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
 			#agragar Label...
-		self.EtiquetaAutos=tk.Label(self.MarcoBottom,text="Autos :",font=('Courier',14,"bold","italic"))
-		self.EtiquetaAutos.pack(side="left",padx=5)
-
-		#cantidad de autos
-		self.CantidadAutos=tk.Label(self.MarcoBottom,text="10",font=('Courier',14))
-		self.CantidadAutos.pack(side="left",padx=5)
-		#etiqueta mototaxi
-		self.EtiquetaMototaxi=tk.Label(self.MarcoBottom,text="Mototaxi :",font=('Courier',14,"bold","italic"))
-		self.EtiquetaMototaxi.pack(side="left",padx=10)
-
-		#cantidad de Mototaxis
-		self.CantidadMototaxi=tk.Label(self.MarcoBottom,text="30",font=('Courier',14))
-		self.CantidadMototaxi.pack(side="left",padx=5)
-
-		#etiqueta camiones...
-		self.EtiquetaCamion=tk.Label(self.MarcoBottom,text="Camiones :",font=('Courier',14,"bold","italic"))
-		self.EtiquetaCamion.pack(side="left",padx=10)
-		#cantidad de camiones
-		self.CantidadCamion=tk.Label(self.MarcoBottom,text="50",font=('Courier',14))
-		self.CantidadCamion.pack(side="left",padx=5)
-		#tiempo
+			
+		
 		#cantidad de tiempo
 		self.segundo=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
 		self.segundo.pack(side="right",padx=2)
@@ -206,7 +188,7 @@ class VMain:
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
 		#menu operaciones
 		Reportes=tk.Menu(self.BarraMenu,tearoff=0)
-		Reportes.add_command(label="Reporte",command=lambda:self.eventoReporte(self.ventana))
+		Reportes.add_command(label="Reporte")
 		Reportes.add_command(label="Exportar a PDF")
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
@@ -245,9 +227,9 @@ class VMain:
 		self.ventana.wm_attributes("-disabled",0)
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
-			self.cap=cv2.VideoCapture(int(self.numeroCamara))
-			self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1000)
-			self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,570)
+			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)
+			self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,20)
+			self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,7)
 			self.objVideo=Fotogramas.camara()
 			ss=0
 			hh=0
@@ -260,6 +242,7 @@ class VMain:
 					FrameMatriz=FrameMatriz[:,::-1]
 				
 				fotograma=self.objVideo.lectura(FrameMatriz)
+				self.EtiquetaVideo.config(width="20",height="7")
 				self.EtiquetaVideo.configure(image=fotograma)
 				self.EtiquetaVideo.image=fotograma
 				segundosF=segundosF+1
@@ -357,14 +340,7 @@ class VMain:
 	def eventBAVideo(self,hilo):
 		self.manejador=threading.Thread(target=self.abrirVideo,args=(hilo,))
 		self.manejador.start()
-	def eventoReporte(self,ventana):
-		cantidadMoto=self.CantidadMototaxi.cget("text")
-		cantidadCamio=self.CantidadCamion.cget("text")
-		cantidadAuto=self.CantidadMototaxi.cget("text")
-		cantidadDeTiempo=self.CantidadTiempo
-		
-		objReporte=Report.Reports(ventana,cantidadMoto,cantidadCamio,cantidadAuto,cantidadDeTiempo)
-	#acerca del autor...
+	
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 
 			"\nde Sistemas Jaime Navarro Cruz, egresado de\n"
