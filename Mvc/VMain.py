@@ -25,11 +25,10 @@ class VMain:
 	BIniciar=None
 	openVideo=None
 	reproducirO=None
-	#etiquetas
-	EtiquetaCamion=None
-	EtiquetaMototaxi=None
-	EtiquetaAutos=None
-	#etiqueta video contenedor...
+	
+	#etiqueta videos contenedor...
+	EtiquetaIBinarizada=None
+	EtiquetaImagen3=None
 	EtiquetaVideo=None
 	#etiqueta que almacena la cantidad de objetos...
 	CantidadCamion=None
@@ -139,10 +138,22 @@ class VMain:
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
 		#Label video
-		self.EtiquetaVideo=tk.Label(self.MarcoP,text="PANTALLA PRINCIPAL",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
+		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen1",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
 
-		#self.EtiquetaVideo.config(width="20",height="7")
-		self.EtiquetaVideo.grid(column=0,row=0)
+		self.EtiquetaVideo.config(width="30",height="10")
+		#self.EtiquetaVideo.pack()
+		self.EtiquetaVideo.pack(side="left",anchor="nw",padx=30,pady=10)
+		self.EtiquetaVideo.pack_propagate(False)
+		#etiqueta imagen binarizada
+		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
+		self.EtiquetaIBinarizada.config(width="30",height="10")
+		self.EtiquetaIBinarizada.pack(side="left",anchor="nw",padx=30,pady=10)
+
+		#etiqueta 3ra imagen
+		self.EtiquetaImagen3=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
+		self.EtiquetaImagen3.config(width="30",height="10")
+		self.EtiquetaImagen3.pack(side="left",anchor="nw",padx=30,pady=10)
+
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=1150,height=80)
 		self.MarcoBottom.pack(side="bottom")
@@ -228,8 +239,8 @@ class VMain:
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
 			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)
-			self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,20)
-			self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,7)
+			#self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,100)
+			#self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,100)
 			self.objVideo=Fotogramas.camara()
 			ss=0
 			hh=0
@@ -242,7 +253,7 @@ class VMain:
 					FrameMatriz=FrameMatriz[:,::-1]
 				
 				fotograma=self.objVideo.lectura(FrameMatriz)
-				self.EtiquetaVideo.config(width="20",height="7")
+				self.EtiquetaVideo.config(width="330",height="215")
 				self.EtiquetaVideo.configure(image=fotograma)
 				self.EtiquetaVideo.image=fotograma
 				segundosF=segundosF+1
@@ -264,7 +275,8 @@ class VMain:
 				if self.hilo[0]:
 					self.hilo[0]=False
 					self.EtiquetaVideo.configure(image='')
-					self.EtiquetaVideo.configure(text='PANTALLA PRINCIPAL')
+					self.EtiquetaVideo.configure(text='Imagen 1')
+					self.EtiquetaVideo.config(width="30",height="10")
 					break
 			self.cap.release()
 			self.cap=None
@@ -279,6 +291,7 @@ class VMain:
 	def EventoMSalir(self,cap):
 		if cap==None:
 			self.ventana.destroy()
+
 		else:
 			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")		
 	def EventoMMinimizar(self):
