@@ -30,16 +30,21 @@ class VMain:
 	EtiquetaIBinarizada=None
 	EtiquetaImagen3=None
 	EtiquetaVideo=None
-	#etiqueta que almacena la cantidad de objetos...
-	CantidadCamion=None
-	CantidadMototaxi=None
-	CantidadAutos=None
-		#etiqueta tiempo
+
+
+	#escalas
+	scale_max=None
+	scale_min=None
+	valor_maximo_escala=None
+	valor_minimo_escala=None
+	
+	#etiqueta tiempo
 	EtiquetaTiempo=None
 	CantidadTiempo=0
 	hora=None
 	minuto=None
 	segundo=None
+
 	#aperturar camara...
 	objVideo=None
 	hilo=[False]	
@@ -60,7 +65,12 @@ class VMain:
 	etiquetaTitulo1=None
 	etiquetaTitulo2=None
 
+
 	def __init__(self):
+
+		#imagenes procesar
+		self.img_main=None
+
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
 		self.ventana.title("SISTEMA DE CLASIFICACION DE LA PALTA")
@@ -72,37 +82,33 @@ class VMain:
 		self.ventana.configure(bg="#DDFFDD")
 		#agregando marco izquierda
 		self.Marco=tk.Frame(self.ventana,width=130,height=650)
-		self.Marco.pack(side="left")
-		self.Marco.pack_propagate(False)
+		self.Marco.place(x=0,y=0)		
 		self.Marco.config(bg="lightblue")
 		self.Marco.config(relief='ridge')
 		self.Marco.config(bd=3)
 
 		#insertando los botones...
 		#titulo1 del menu izquierdo...
-		self.etiquetaTitulo1=tk.Label(self.Marco,text="Abrir Video")
+		self.etiquetaTitulo1=tk.Label(self.Marco,text="Imágenes")
 		self.etiquetaTitulo1.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
 		self.etiquetaTitulo1.place(x=0,y=20)
-		#open video...
+		#Abrir y cargar imagenes...
 		
-		self.openVideo=tk.Button(self.Marco,text="Direccionar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.openVideo=tk.Button(self.Marco,text="Buscar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
 		self.openVideo.configure(command=lambda:self.abrirDireccion(self.hilo),bd=5,overrelief="raised",width=9)
 		self.openVideo.place(x=5,y=60)
-
-		#
-		self.reproducirO=tk.Button(self.Marco,text="Reproducir",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
-		self.reproducirO.configure(command=lambda:self.eventBAVideo(self.hilo),bd=5,overrelief="raised")
+		
+		self.reproducirO=tk.Button(self.Marco,text="Cargar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.reproducirO.configure(command=self.abrirImagen,bd=5,overrelief="raised")
 		self.reproducirO.configure(width=9)
 		self.reproducirO.place(x=5,y=160)
-
-
 		#agregar separador...
 		#estilo del separador...
 		
 		separador1Left=ttk.Separator(self.Marco,orient="horizontal")
 		separador1Left.place(x=0,y=255,relwidth=5)
 		#titulo2
-		self.etiquetaTitulo2=tk.Label(self.Marco,text="Streaming")
+		self.etiquetaTitulo2=tk.Label(self.Marco,text="En Vivo")
 		self.etiquetaTitulo2.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
 		self.etiquetaTitulo2.place(x=0,y=255)
 
@@ -131,51 +137,70 @@ class VMain:
 		#fin de izquierdo
 		#agregando marco principal
 		self.MarcoP=tk.Frame(self.ventana,width=1150,height=570)
-		self.MarcoP.pack()
-		self.MarcoP.pack_propagate()
-
-		self.MarcoP.pack_propagate(False)
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
+		self.MarcoP.place(x=130,y=0)
 		#Label video
+		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original")
+		etiqueta_titulo_cuadro1.place(x=22,y=3)
 		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen1",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
 
 		self.EtiquetaVideo.config(width="30",height="10")
-		#self.EtiquetaVideo.pack()
-		self.EtiquetaVideo.pack(side="left",anchor="nw",padx=30,pady=10)
-		self.EtiquetaVideo.pack_propagate(False)
+		
+		self.EtiquetaVideo.place(x=20,y=10)
+		
 		#etiqueta imagen binarizada
+		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Imagen2")
+		etiqueta_titulo_cuadro2.place(x=395,y=3)
 		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaIBinarizada.config(width="30",height="10")
-		self.EtiquetaIBinarizada.pack(side="left",anchor="nw",padx=30,pady=10)
+		self.EtiquetaIBinarizada.place(x=390,y=5)
 
 		#etiqueta 3ra imagen
+		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Imagen Original")
+		etiqueta_titulo_cuadro3.place(x=775,y=3)
 		self.EtiquetaImagen3=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaImagen3.config(width="30",height="10")
-		self.EtiquetaImagen3.pack(side="left",anchor="nw",padx=30,pady=10)
+		self.EtiquetaImagen3.place(x=770,y=5)
+
+		#agragar escalas
+		
+		etiquetaEscala=tk.Label(self.MarcoP,text="Umbral para la deteccion de Bordes",font=('times',11,'bold','italic'))
+		
+		etiquetaEscala.place(x=20,y=245)
+		self.scale_max=tk.Scale(self.MarcoP,from_=0,to=256,orient='horizontal',length=150,label="Max")
+		
+		self.scale_max.place(x=200,y=280)
+
+		self.scale_min=tk.Scale(self.MarcoP,from_=0,to=256,orient='horizontal',length=150,label="Min")
+		self.scale_min.place(x=20,y=280)
+
+		btn_process=tk.Button(self.MarcoP,text='Procesar')
+		btn_process.config(command=self.deteccion_bordes)
+		btn_process.place(x=400,y=280)
 
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=1150,height=80)
-		self.MarcoBottom.pack(side="bottom")
-		self.MarcoBottom.pack_propagate(False)
+		#self.MarcoBottom.pack(side="bottom")
+		#self.MarcoBottom.pack_propagate(False)
 		self.MarcoBottom.config(bg="#D1CBC7")
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
-			#agragar Label...
+		self.MarcoBottom.place(x=130,y=575)
 			
 		
 		#cantidad de tiempo
 		self.segundo=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		self.segundo.pack(side="right",padx=2)
+		self.segundo.place(x=5,y=0)
 
 		self.minuto=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		self.minuto.pack(side="right",padx=2)
+		#self.minuto.pack(side="right",padx=2)
 
 		self.hora=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		self.hora.pack(side="right",padx=5)
+		#self.hora.pack(side="right",padx=5)
 
 		self.EtiquetaTiempo=tk.Label(self.MarcoBottom,text="Tiempo :",font=('Courier',14,"bold","italic"))
-		self.EtiquetaTiempo.pack(side="right",padx=1)
+		#self.EtiquetaTiempo.pack(side="right",padx=1)
 		
 		#agregando menu
 
@@ -299,61 +324,41 @@ class VMain:
 	def abrirDireccion(self,hilo):
 		hilo[0]=True
 		self.Address_video=filedialog.askopenfilename()		
-	def abrirVideo(self,mirror=False):
+	def abrirImagen(self):
 		if self.Address_video!=None:
-			direccion=self.Address_video
-			self.cap=cv2.VideoCapture(direccion)	
 			self.objVideo=Fotogramas.camara()
-			ss=0
-			hh=0
-			mm=0
-			segundosF=0	
-			self.CantidadTiempo=0	
-			while True:
-				ret,frame=self.cap.read()
-				if mirror is True:
-					frame=frame[:,::-1]
-				if ret:
-					fotograma=self.objVideo.lectura(frame)
-					self.EtiquetaVideo.configure(image=fotograma)
-					self.EtiquetaVideo.image=fotograma
-					self.EtiquetaVideo.configure(image=fotograma)
-					self.EtiquetaVideo.image=fotograma
-					segundosF=segundosF+1
-					if segundosF==30:
-						ss=ss+1
-						self.CantidadTiempo=self.CantidadTiempo+1
-						segundosF=0					
-					if ss==60:
-						ss=0
-						mm=mm+1					
-					if mm==60:
-						hh=hh+1
-						mm=0
-						
-					self.segundo.configure(text=str(ss))
-					self.minuto.configure(text=str(mm))
-					self.hora.configure(text=str(hh))
+			img_source=cv2.imread(self.Address_video)
+			self.img_main=img_source
+			img_source=cv2.resize(img_source,(330,215),interpolation=cv2.INTER_AREA)
+			img_source=self.objVideo.lectura(img_source)
+			self.EtiquetaVideo.config(width="330",height="215")
+			self.EtiquetaVideo.configure(image=img_source)
+			self.EtiquetaVideo.image=img_source
+		self.objVideo=None
+					
+	def deteccion_bordes(self):
+		
+		if self.objVideo==None:
+			self.objVideo=Fotogramas.camara()
+			img_with_edge=self.objVideo.detect_edge(self.img_main,self.scale_max.get(),self.scale_min.get())
+			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
+			img_with_edge=self.objVideo.lectura(img_with_edge)
 
-					time.sleep(0.027)
-					if self.hilo[0]:
-						self.hilo[0]=False
-						self.EtiquetaVideo.configure(image='')
-						self.EtiquetaVideo.configure(text='PANTALLA PRINCIPAL')
-						break
-				else:
-					self.hilo[0]=False
-					self.EtiquetaVideo.configure(image='')
-					self.EtiquetaVideo.configure(text='PANTALLA PRINCIPAL')
-					break
-			self.cap.release()
-			self.cap=None
+			self.EtiquetaIBinarizada.config(width="330",height="215")
+			self.EtiquetaIBinarizada.configure(image=img_with_edge)
+			self.EtiquetaIBinarizada.image=img_with_edge
 		else:
-			msgI.showinfo("Alerta!!","seleccione un video!!")			
-	def eventBAVideo(self,hilo):
-		self.manejador=threading.Thread(target=self.abrirVideo,args=(hilo,))
-		self.manejador.start()
-	
+			img_with_edge=self.objVideo.detect_edge(self.img_main,self.scale_max.get(),self.scale_min.get())
+			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
+			img_with_edge=self.objVideo.lectura(img_with_edge)
+
+			self.EtiquetaIBinarizada.config(width="330",height="215")
+			self.EtiquetaIBinarizada.configure(image=img_with_edge)
+			self.EtiquetaIBinarizada.image=img_with_edge
+
+			
+
+
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 
 			"\nde Sistemas Jaime Navarro Cruz, egresado de\n"
