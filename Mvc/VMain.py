@@ -12,64 +12,28 @@ import Report
 #find camera
 #import findCamera
 
-class VMain:
-	ventana=None
-	BarraMenu=None
-	#marcos
-	MarcoP=None
-	Marco=None
-	MarcoBottom=None
-	#botones
-	Bconfigurar=None
-	BTerminar=None
-	BIniciar=None
-	openVideo=None
-	reproducirO=None
+class VMain:	
 	
-	#etiqueta videos contenedor...
-	EtiquetaIBinarizada=None
-	EtiquetaImagen3=None
-	EtiquetaVideo=None
-
-
-	#escalas
 	scale_max=None
 	scale_min=None
 	valor_maximo_escala=None
 	valor_minimo_escala=None
-	
-	#etiqueta tiempo
-	EtiquetaTiempo=None
-	CantidadTiempo=0
-	hora=None
-	minuto=None
-	segundo=None
-
 	#aperturar camara...
 	objVideo=None
 	hilo=[False]	
 	#manejadorhilo
 	manejador=None
 	# direccion del video abierto
-	Address_video=None
-	#toplevels
-	#buscador de camaras...
-	top1=None
-	#componentes de toplevels...
-	#componente del primer top...
+	Address_video=None	
 	selectCamara=None
 	numeroCamara=None
 	#camara...
 	cap=None
-	#etiquetas menu izquierdo...
-	etiquetaTitulo1=None
-	etiquetaTitulo2=None
-
-
 	def __init__(self):
 
 		#imagenes procesar
 		self.img_main=None
+		self.controlador_video=0
 
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
@@ -119,13 +83,13 @@ class VMain:
 
 		#play
 		self.BIniciar=tk.Button(self.Marco,text="Iniciar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
-		self.BIniciar.configure(width=9,command=lambda:self.EventBIVideo(self.hilo),bd=5,overrelief="raised")
+		self.BIniciar.configure(width=9,command=self.EventBIVideo,bd=5,overrelief="raised")
 		self.BIniciar.place(x=5,y=395)
 
 		separador2Left=ttk.Separator(self.Marco,orient="horizontal")
 		separador2Left.place(x=0,y=490,relwidth=10)
 
-		self.BTerminar=tk.Button(self.Marco,text="Parar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.BTerminar=tk.Button(self.Marco,text="Detener",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
 		self.BTerminar.configure(command=lambda:self.EventBTVideo(self.hilo),bd=5,overrelief="raised")
 		self.BTerminar.configure(width=9)
 		self.BTerminar.place(x=5,y=510)
@@ -201,10 +165,6 @@ class VMain:
 
 		self.EtiquetaTiempo=tk.Label(self.MarcoBottom,text="Tiempo :",font=('Courier',14,"bold","italic"))
 		#self.EtiquetaTiempo.pack(side="right",padx=1)
-		
-		#agregando menu
-
-
 		self.BarraMenu()
 		#hilo
 		
@@ -220,7 +180,7 @@ class VMain:
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
 		ConfiguracionM.add_command(label="seleccionar Camara",command=self.FindCamera)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
-		ConfiguracionM.add_command(label="Minimizar",command=self.EventoMMinimizar)
+		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
 		#menu operaciones
 		Reportes=tk.Menu(self.BarraMenu,tearoff=0)
@@ -230,10 +190,7 @@ class VMain:
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
 		self.BarraMenu.add_cascade(label="Acciones",menu=Reportes)
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
-	def FindCamera(self):
-		'''self.ventana.wm_attributes("-disabled",1)
-		objFindCamera=findCamera.BuscarCamara()
-		objFindCamera.ejecutarVentana()'''
+	def FindCamera(self):		
 		self.top1 = tk.Toplevel(self.ventana, bg="Orange",relief="groove")
 		self.top1.title("Seeleccionar Cámara")
 		self.top1.geometry("500x170+200+120")
@@ -261,11 +218,10 @@ class VMain:
 		self.top1.destroy()
 		self.top1=None
 		self.ventana.wm_attributes("-disabled",0)
+		
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
-			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)
-			#self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,100)
-			#self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,100)
+			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)			
 			self.objVideo=Fotogramas.camara()
 			ss=0
 			hh=0
@@ -308,19 +264,17 @@ class VMain:
 				
 		else:
 			msgI.showinfo("Alerta!!","Seleccione Camara!!")
-	def EventBIVideo(self,hilo):		
-		self.manejador=threading.Thread(target=self.AbrirFotogramas,args=(hilo,))
+	def EventBIVideo(self):
+						
+		self.manejador=threading.Thread(target=self.AbrirFotogramas)
 		self.manejador.start()		
-	def EventBTVideo(self,hilo):
+	def EventBTVideo(self,hilo):		
 		hilo[0]=True			
 	def EventoMSalir(self,cap):
 		if cap==None:
 			self.ventana.destroy()
-
 		else:
-			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")		
-	def EventoMMinimizar(self):
-		self.ventana.iconify()
+			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")	
 	def abrirDireccion(self,hilo):
 		hilo[0]=True
 		self.Address_video=filedialog.askopenfilename()		
