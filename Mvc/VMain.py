@@ -10,7 +10,7 @@ import tkinter.messagebox as msgI
 import Fotogramas
 import Report
 #find camera
-#import findCamera
+import findCamera
 
 class VMain:	
 	
@@ -26,10 +26,13 @@ class VMain:
 	# direccion del video abierto
 	Address_video=None	
 	selectCamara=None
-	numeroCamara=None
+	
 	#camara...
 	cap=None
 	def __init__(self):
+		self.numeroCamara=None
+		#creando objetos
+		self.obj_Camera=findCamera.BuscarCamara()
 
 		#imagenes procesar
 		self.img_main=None
@@ -76,9 +79,9 @@ class VMain:
 		self.etiquetaTitulo2.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
 		self.etiquetaTitulo2.place(x=0,y=255)
 
-		self.Bconfigurar=tk.Button(self.Marco,text="Buscar Cam.",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.Bconfigurar=tk.Button(self.Marco,text="Selec. Cam.",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
 		self.Bconfigurar.configure(width=9)
-		self.Bconfigurar.configure(command=self.FindCamera,bd=5,overrelief="raised")
+		self.Bconfigurar.configure(command=self.obj_Camera.Top_Camera,bd=5,overrelief="raised")
 		self.Bconfigurar.place(x=5,y=300)
 
 		#play
@@ -178,7 +181,7 @@ class VMain:
 		AyudaM.add_command(label="Acerca de...",command= self.informacionSoftware)
 		#menú configuracion...
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
-		ConfiguracionM.add_command(label="seleccionar Camara",command=self.FindCamera)
+		#ConfiguracionM.add_command(label="seleccionar Camara",command=self.FindCamera)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
@@ -189,35 +192,7 @@ class VMain:
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
 		self.BarraMenu.add_cascade(label="Acciones",menu=Reportes)
-		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
-	def FindCamera(self):		
-		self.top1 = tk.Toplevel(self.ventana, bg="Orange",relief="groove")
-		self.top1.title("Seeleccionar Cámara")
-		self.top1.geometry("500x170+200+120")
-		self.top1.overrideredirect(1)
-		self.top1.wm_attributes("-topmost",1)
-		self.top1.resizable(0,0)
-
-		labelCamara=tk.Label(self.top1,text="Seleccione una Cámara:")
-		labelCamara.configure(width=20,bg="Orange",font=("",14),height=3)
-		labelCamara.place(x=0,y=20)
-
-		#agregando un select...
-		self.selectCamara=ttk.Combobox(self.top1,font=("",14),height=3)
-		self.selectCamara["values"]=[0,1,2,3,4,5,6,7,8,9]
-		self.selectCamara.current(0)
-		self.selectCamara.place(x=250,y=40)
-		#agregando un boton...
-		botonAceptar=tk.Button(self.top1,text="Aceptar",bg="#FFF",font=("",14))
-		botonAceptar.configure(width=9,command=self.AceptarFindCamera)
-		botonAceptar.place(x=160,y=100)
-		 
-		self.ventana.wm_attributes("-disabled",1)
-	def AceptarFindCamera(self):
-		self.numeroCamara=self.selectCamara.get()	
-		self.top1.destroy()
-		self.top1=None
-		self.ventana.wm_attributes("-disabled",0)
+		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)	
 		
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
@@ -265,9 +240,9 @@ class VMain:
 		else:
 			msgI.showinfo("Alerta!!","Seleccione Camara!!")
 	def EventBIVideo(self):
-						
+		self.numeroCamara=self.obj_Camera.numeroCamera		
 		self.manejador=threading.Thread(target=self.AbrirFotogramas)
-		self.manejador.start()		
+		self.manejador.start()	
 	def EventBTVideo(self,hilo):		
 		hilo[0]=True			
 	def EventoMSalir(self,cap):
