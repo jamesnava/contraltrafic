@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from PIL import ImageTk
 import cv2
+import numpy as np
 import threading 
 import time
 import tkinter.messagebox as msgI
@@ -20,7 +21,7 @@ class VMain:
 	valor_minimo_escala=None
 	#aperturar camara...
 	objVideo=None
-	hilo=[False]	
+		
 	#manejadorhilo
 	manejador=None
 	# direccion del video abierto
@@ -31,6 +32,7 @@ class VMain:
 	cap=None
 	def __init__(self):
 		self.numeroCamara=None
+		self.hilo=False
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
 
@@ -41,7 +43,9 @@ class VMain:
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
 		self.ventana.title("SISTEMA DE CLASIFICACION DE LA PALTA")
-		self.ventana.geometry('1300x650+0+10')
+		screen_width = self.ventana.winfo_screenwidth()
+		screen_height = self.ventana.winfo_screenheight()
+		self.ventana.geometry(f'{int(screen_width*0.99)}x{int(screen_height*0.90)}+0+0')
 		#self.ventana.overrideredirect(1)
 		self.ventana.protocol("WM_DELETE_WINDOW",lambda:self.EventoMSalir(self.cap))
 		self.ventana.iconbitmap('../images/favicon.ico')
@@ -86,14 +90,14 @@ class VMain:
 
 		#play
 		self.BIniciar=tk.Button(self.Marco,text="Iniciar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
-		self.BIniciar.configure(width=9,command=self.EventBIVideo,bd=5,overrelief="raised")
+		self.BIniciar.configure(width=9,command=self.InicioVideo,bd=5,overrelief="raised")
 		self.BIniciar.place(x=5,y=395)
 
 		separador2Left=ttk.Separator(self.Marco,orient="horizontal")
 		separador2Left.place(x=0,y=490,relwidth=10)
 
-		self.BTerminar=tk.Button(self.Marco,text="Detener",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
-		self.BTerminar.configure(command=lambda:self.EventBTVideo(self.hilo),bd=5,overrelief="raised")
+		self.BTerminar=tk.Button(self.Marco,text="Capturar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.BTerminar.configure(command=self.CapturaImagen,bd=5,overrelief="raised")
 		self.BTerminar.configure(width=9)
 		self.BTerminar.place(x=5,y=510)
 
@@ -103,53 +107,39 @@ class VMain:
 
 		#fin de izquierdo
 		#agregando marco principal
-		self.MarcoP=tk.Frame(self.ventana,width=1150,height=570)
+		self.MarcoP=tk.Frame(self.ventana,width=int(screen_width*0.88),height=570)
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
 		self.MarcoP.place(x=130,y=0)
 		#Label video
 		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original")
-		etiqueta_titulo_cuadro1.place(x=22,y=3)
+		etiqueta_titulo_cuadro1.place(x=22,y=1)
 		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen1",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
-
-		self.EtiquetaVideo.config(width="30",height="10")
-		
-		self.EtiquetaVideo.place(x=20,y=10)
+		self.EtiquetaVideo.config(width="26",height="9")	
+		self.EtiquetaVideo.place(x=10,y=20)
 		
 		#etiqueta imagen binarizada
 		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Imagen2")
-		etiqueta_titulo_cuadro2.place(x=395,y=3)
+		etiqueta_titulo_cuadro2.place(x=395,y=1)
 		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
-		self.EtiquetaIBinarizada.config(width="30",height="10")
-		self.EtiquetaIBinarizada.place(x=390,y=5)
+		self.EtiquetaIBinarizada.config(width="26",height="9")
+		self.EtiquetaIBinarizada.place(x=420,y=20)
 
 		#etiqueta 3ra imagen
 		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Imagen Original")
-		etiqueta_titulo_cuadro3.place(x=775,y=3)
+		etiqueta_titulo_cuadro3.place(x=775,y=1)
 		self.EtiquetaImagen3=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
-		self.EtiquetaImagen3.config(width="30",height="10")
-		self.EtiquetaImagen3.place(x=770,y=5)
-
-		#agragar escalas
+		self.EtiquetaImagen3.config(width="26",height="9")
+		self.EtiquetaImagen3.place(x=850,y=20)
 		
-		etiquetaEscala=tk.Label(self.MarcoP,text="Umbral para la deteccion de Bordes",font=('times',11,'bold','italic'))
-		
-		etiquetaEscala.place(x=20,y=245)
-		self.scale_max=tk.Scale(self.MarcoP,from_=0,to=256,orient='horizontal',length=150,label="Max")
-		
-		self.scale_max.place(x=200,y=280)
-
-		self.scale_min=tk.Scale(self.MarcoP,from_=0,to=256,orient='horizontal',length=150,label="Min")
-		self.scale_min.place(x=20,y=280)
 
 		btn_process=tk.Button(self.MarcoP,text='Procesar')
 		btn_process.config(command=self.deteccion_bordes)
 		btn_process.place(x=400,y=280)
 
 		#marco bottom
-		self.MarcoBottom=tk.Frame(self.ventana,width=1150,height=80)
-		#self.MarcoBottom.pack(side="bottom")
-		#self.MarcoBottom.pack_propagate(False)
+		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.88),height=80)
+		
 		self.MarcoBottom.config(bg="#D1CBC7")
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
@@ -205,11 +195,11 @@ class VMain:
 			self.CantidadTiempo=0				
 			while True:
 				ret,FrameMatriz=self.cap.read()
-				if mirror is True:
-					FrameMatriz=FrameMatriz[:,::-1]
-				
+				FrameMatriz=cv2.resize(FrameMatriz,(int(FrameMatriz.shape[1]*0.50),int(FrameMatriz.shape[0]*0.50)),interpolation=cv2.INTER_AREA)
+				#if mirror is True:
+				#	FrameMatriz=FrameMatriz[:,::-1]				
 				fotograma=self.objVideo.lectura(FrameMatriz)
-				self.EtiquetaVideo.config(width="330",height="215")
+				self.EtiquetaVideo.config(width="320",height="240")
 				self.EtiquetaVideo.configure(image=fotograma)
 				self.EtiquetaVideo.image=fotograma
 				segundosF=segundosF+1
@@ -227,31 +217,29 @@ class VMain:
 				self.segundo.configure(text=str(ss))
 				self.minuto.configure(text=str(mm))
 				self.hora.configure(text=str(hh))
-
-				if self.hilo[0]:
-					self.hilo[0]=False
-					self.EtiquetaVideo.configure(image='')
-					self.EtiquetaVideo.configure(text='Imagen 1')
-					self.EtiquetaVideo.config(width="30",height="10")
+				if self.hilo:
+					cv2.imshow('capturado',FrameMatriz)
+					cv2.waitKey()
+					self.hilo=False					
 					break
 			self.cap.release()
 			self.cap=None
 				
 		else:
 			msgI.showinfo("Alerta!!","Seleccione Camara!!")
-	def EventBIVideo(self):
+	def InicioVideo(self):
 		self.numeroCamara=self.obj_Camera.numeroCamera		
 		self.manejador=threading.Thread(target=self.AbrirFotogramas)
 		self.manejador.start()	
-	def EventBTVideo(self,hilo):		
-		hilo[0]=True			
+	def CapturaImagen(self):		
+		self.hilo=True			
 	def EventoMSalir(self,cap):
 		if cap==None:
 			self.ventana.destroy()
 		else:
 			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")	
 	def abrirDireccion(self,hilo):
-		hilo[0]=True
+		hilo=True
 		self.Address_video=filedialog.askopenfilename()		
 	def abrirImagen(self):
 		if self.Address_video!=None:
@@ -269,7 +257,7 @@ class VMain:
 		
 		if self.objVideo==None:
 			self.objVideo=Fotogramas.camara()
-			img_with_edge=self.objVideo.detect_edge(self.img_main,self.scale_max.get(),self.scale_min.get())
+			img_with_edge=self.objVideo.detect_edge(self.img_main,20,50)
 			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
 			img_with_edge=self.objVideo.lectura(img_with_edge)
 
@@ -277,7 +265,7 @@ class VMain:
 			self.EtiquetaIBinarizada.configure(image=img_with_edge)
 			self.EtiquetaIBinarizada.image=img_with_edge
 		else:
-			img_with_edge=self.objVideo.detect_edge(self.img_main,self.scale_max.get(),self.scale_min.get())
+			img_with_edge=self.objVideo.detect_edge(self.img_main,20,50)
 			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
 			img_with_edge=self.objVideo.lectura(img_with_edge)
 
