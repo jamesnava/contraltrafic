@@ -1,45 +1,33 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from PIL import ImageTk
 import cv2
 import numpy as np
 import threading 
-import time
 import tkinter.messagebox as msgI
+from matplotlib import pyplot as plt
 #clases...
 import Fotogramas
 import Report
-#find camera
 import findCamera
 
-class VMain:	
-	
-	scale_max=None
-	scale_min=None
-	valor_maximo_escala=None
-	valor_minimo_escala=None
-	#aperturar camara...
-	objVideo=None
-		
+class VMain(object):	
+	objVideo=None		
 	#manejadorhilo
 	manejador=None
 	# direccion del video abierto
 	Address_video=None	
-	selectCamara=None
-	
+	selectCamara=None	
 	#camara...
 	cap=None
 	def __init__(self):
 		self.numeroCamara=None
 		self.hilo=False
+		self.matriz_Image=None
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
-
-		#imagenes procesar
-		self.img_main=None
+		self.objVideo=Fotogramas.camara()	
 		self.controlador_video=0
-
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
 		self.ventana.title("SISTEMA DE CLASIFICACION DE LA PALTA")
@@ -114,14 +102,14 @@ class VMain:
 		#Label video
 		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original")
 		etiqueta_titulo_cuadro1.place(x=22,y=1)
-		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen1",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
+		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen original",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
 		self.EtiquetaVideo.config(width="26",height="9")	
 		self.EtiquetaVideo.place(x=10,y=20)
 		
 		#etiqueta imagen binarizada
 		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Imagen2")
 		etiqueta_titulo_cuadro2.place(x=395,y=1)
-		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
+		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen ",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaIBinarizada.config(width="26",height="9")
 		self.EtiquetaIBinarizada.place(x=420,y=20)
 
@@ -137,6 +125,14 @@ class VMain:
 		btn_process.config(command=self.deteccion_bordes)
 		btn_process.place(x=400,y=280)
 
+		#agregando la tabla
+		self.Tabla_General=ttk.Treeview(self.MarcoP,columns=('#1','#2','#3','#4','5'),show='headings')
+		self.Tabla_General.heading('#1',text='Ancho')
+		self.Tabla_General.heading('#2',text='Largo')
+		self.Tabla_General.heading('#3',text='Peso')
+		self.Tabla_General.heading('#4',text='Categoria')
+		self.Tabla_General.heading('#5',text='Descripcion')
+		self.Tabla_General.place(x=10,y=310,width=1000,height=200)
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.88),height=80)
 		
@@ -186,40 +182,17 @@ class VMain:
 		
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
-			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)			
-			self.objVideo=Fotogramas.camara()
-			ss=0
-			hh=0
-			mm=0
-			segundosF=0	
-			self.CantidadTiempo=0				
+			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)								
 			while True:
-				ret,FrameMatriz=self.cap.read()
-				FrameMatriz=cv2.resize(FrameMatriz,(int(FrameMatriz.shape[1]*0.50),int(FrameMatriz.shape[0]*0.50)),interpolation=cv2.INTER_AREA)
-				#if mirror is True:
-				#	FrameMatriz=FrameMatriz[:,::-1]				
-				fotograma=self.objVideo.lectura(FrameMatriz)
+				ret,FrameMatriz_original=self.cap.read()
+				FrameMatriz_scalado=cv2.resize(FrameMatriz_original,(int(FrameMatriz_original.shape[1]*0.50),int(FrameMatriz_original.shape[0]*0.50)),interpolation=cv2.INTER_AREA)				
+				
+				fotograma=self.objVideo.lectura(FrameMatriz_scalado)
 				self.EtiquetaVideo.config(width="320",height="240")
 				self.EtiquetaVideo.configure(image=fotograma)
 				self.EtiquetaVideo.image=fotograma
-				segundosF=segundosF+1
-				if segundosF==30:
-					ss=ss+1
-					self.CantidadTiempo=self.CantidadTiempo+1
-					segundosF=0					
-				if ss==60:
-					ss=0
-					mm=mm+1					
-				if mm==60:
-					hh=hh+1
-					mm=0
-					
-				self.segundo.configure(text=str(ss))
-				self.minuto.configure(text=str(mm))
-				self.hora.configure(text=str(hh))
 				if self.hilo:
-					cv2.imshow('capturado',FrameMatriz)
-					cv2.waitKey()
+					self.matriz_Image=FrameMatriz_original
 					self.hilo=False					
 					break
 			self.cap.release()
@@ -242,39 +215,42 @@ class VMain:
 		hilo=True
 		self.Address_video=filedialog.askopenfilename()		
 	def abrirImagen(self):
-		if self.Address_video!=None:
-			self.objVideo=Fotogramas.camara()
+		if self.Address_video!=None:			
 			img_source=cv2.imread(self.Address_video)
-			self.img_main=img_source
-			img_source=cv2.resize(img_source,(330,215),interpolation=cv2.INTER_AREA)
+			img_source=cv2.cvtColor(img_source,cv2.COLOR_BGR2RGB)
+			#redimencionar para procesar
+			img_source=cv2.resize(img_source,(640,480),interpolation=cv2.INTER_AREA)
+			self.matriz_Image=img_source			
+			img_source=cv2.resize(img_source,(int(img_source.shape[1]*0.5),int(img_source.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
+			
 			img_source=self.objVideo.lectura(img_source)
-			self.EtiquetaVideo.config(width="330",height="215")
+			self.EtiquetaVideo.config(width="320",height="240")
 			self.EtiquetaVideo.configure(image=img_source)
 			self.EtiquetaVideo.image=img_source
-		self.objVideo=None
+		
 					
 	def deteccion_bordes(self):
+		img=self.matriz_Image			
+		img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+		img1=img			
+		#redimensionando las imagenes
+		img=self.objVideo.redimensionar_image(img)
+		img1=self.objVideo.redimensionar_image(img1)
+
+		img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
+		Contorno_Dibujado=self.objVideo.encontrar_contorno(img,img1)
 		
-		if self.objVideo==None:
-			self.objVideo=Fotogramas.camara()
-			img_with_edge=self.objVideo.detect_edge(self.img_main,20,50)
-			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
-			img_with_edge=self.objVideo.lectura(img_with_edge)
+		img=self.objVideo.formato_Tkinter(Contorno_Dibujado)
+		self.EtiquetaIBinarizada.config(width='320',height='240')
+		self.EtiquetaIBinarizada.configure(image=img)
+		self.EtiquetaIBinarizada.image=img
 
-			self.EtiquetaIBinarizada.config(width="330",height="215")
-			self.EtiquetaIBinarizada.configure(image=img_with_edge)
-			self.EtiquetaIBinarizada.image=img_with_edge
-		else:
-			img_with_edge=self.objVideo.detect_edge(self.img_main,20,50)
-			img_with_edge=cv2.resize(img_with_edge,(330,215),interpolation=cv2.INTER_AREA)
-			img_with_edge=self.objVideo.lectura(img_with_edge)
-
-			self.EtiquetaIBinarizada.config(width="330",height="215")
-			self.EtiquetaIBinarizada.configure(image=img_with_edge)
-			self.EtiquetaIBinarizada.image=img_with_edge
-
-			
-
+		retval,img1 = cv2.threshold(img1,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+		#img1=cv2.resize(img1,(int(img1.shape[1]*0.5),int(img1.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
+		img1=self.objVideo.formato_Tkinter(img1)
+		self.EtiquetaImagen3.config(width='320',height='240')
+		self.EtiquetaImagen3.configure(image=img1)
+		self.EtiquetaImagen3.image=img1
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 
