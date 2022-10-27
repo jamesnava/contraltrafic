@@ -238,19 +238,19 @@ class VMain(object):
 		img1=self.objVideo.redimensionar_image(img1)
 
 		img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
-		Contorno_Dibujado=self.objVideo.encontrar_contorno(img,img1)
-		
-		img=self.objVideo.formato_Tkinter(Contorno_Dibujado)
+		Contorno_Dibujado,largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
+		img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
+		img=self.objVideo.formato_Tkinter(img)
 		self.EtiquetaIBinarizada.config(width='320',height='240')
 		self.EtiquetaIBinarizada.configure(image=img)
 		self.EtiquetaIBinarizada.image=img
 
-		retval,img1 = cv2.threshold(img1,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+		'''retval,img1 = cv2.threshold(img1,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 		#img1=cv2.resize(img1,(int(img1.shape[1]*0.5),int(img1.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
 		img1=self.objVideo.formato_Tkinter(img1)
 		self.EtiquetaImagen3.config(width='320',height='240')
 		self.EtiquetaImagen3.configure(image=img1)
-		self.EtiquetaImagen3.image=img1
+		self.EtiquetaImagen3.image=img1'''
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 

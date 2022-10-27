@@ -67,5 +67,5 @@ contours, hierarchy = cv2.findContours(imagen_limpia,cv2.RETR_EXTERNAL, cv2.CHAI
 # -1 signifies drawing all contours
 cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
   
-cv2.imshow('Contours', img)
+cv2.imshow('Contours',imagen_limpia)
 cv2.waitKey(0)
