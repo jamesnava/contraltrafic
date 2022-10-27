@@ -230,9 +230,9 @@ class VMain(object):
 		
 					
 	def deteccion_bordes(self):
-		img=self.matriz_Image			
-		img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-		img1=img			
+		img=self.matriz_Image
+		img1=img				
+		img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				
 		#redimensionando las imagenes
 		img=self.objVideo.redimensionar_image(img)
 		img1=self.objVideo.redimensionar_image(img1)
@@ -245,12 +245,12 @@ class VMain(object):
 		self.EtiquetaIBinarizada.configure(image=img)
 		self.EtiquetaIBinarizada.image=img
 
-		'''retval,img1 = cv2.threshold(img1,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-		#img1=cv2.resize(img1,(int(img1.shape[1]*0.5),int(img1.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
+		#analisis de color
+		img1=self.objVideo.analisis_Color(img1)
 		img1=self.objVideo.formato_Tkinter(img1)
 		self.EtiquetaImagen3.config(width='320',height='240')
 		self.EtiquetaImagen3.configure(image=img1)
-		self.EtiquetaImagen3.image=img1'''
+		self.EtiquetaImagen3.image=img1
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 

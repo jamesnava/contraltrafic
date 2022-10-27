@@ -5,15 +5,15 @@ from scipy import ndimage
 
 
 
-'''img=cv2.imread('image/image07.png')
+img=cv2.imread('image/41.jpg')
 img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
 img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
 img=cv2.cvtColor(img_yuv,cv2.COLOR_YUV2BGR)
-#img=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-#img=cv2.cvtColor(img,cv2.COLOR_HSV2GRAY)'''
+img=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+#img=cv2.cvtColor(img,cv2.COLOR_HSV2GRAY)
  
 
-'''lower_green=np.array([50,10,10])
+lower_green=np.array([50,10,10])
 upper_green=np.array([85,255,255])
 mask=cv2.inRange(img,lower_green,upper_green)
 res=cv2.bitwise_and(img,img,mask=mask)
@@ -22,10 +22,8 @@ for i in range(mask.shape[0]):
 	for j in range(mask.shape[1]):
 		if mask[i][j]>0:
 			cantidad+=1
-print(cantidad)
-
-cv2.imshow('image1',img)
-cv2.waitKey()'''
+cv2.imshow('res',res)
+cv2.waitKey()
 
 '''camara=cv2.VideoCapture(1,cv2.CAP_DSHOW)
 while True:
@@ -44,7 +42,7 @@ camara.release()
 cv2.destroyAllWindows()'''
 
 
-img=cv2.imread('image/image01.png')
+'''img=cv2.imread('image/image01.png')
 img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 img1=cv2.GaussianBlur(img,(7,7),0)
 #hist=cv2.calcHist([img],[0],None,[256],[0,256])
@@ -68,4 +66,4 @@ contours, hierarchy = cv2.findContours(imagen_limpia,cv2.RETR_EXTERNAL, cv2.CHAI
 cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
   
 cv2.imshow('Contours',imagen_limpia)
-cv2.waitKey(0)
+cv2.waitKey(0)'''

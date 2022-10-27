@@ -79,6 +79,18 @@ class camara:
 		#las proporciones 1cm->13.42 pixeles
 		cv2.putText(img,f'(L:{round(largo/13.42,2)},A: {round(ancho/13.42,2)})',(10,50),font,1,(255,255,255),1)
 		return img
+	def analisis_Color(self,img):
+		#image=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+		lower_color=np.array([50,10,10])
+		upper_color=np.array([85,255,255])
+		img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
+		img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
+		img=cv2.cvtColor(img_yuv,cv2.COLOR_YUV2BGR)
+		image=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+		#mascara
+		mask=cv2.inRange(image,lower_color,upper_color)
+		image_bit=cv2.bitwise_and(image,image,mask=mask)
+		return image_bit
 	def terminar(self):
 		self.camara.release()
 		self.frame=None
