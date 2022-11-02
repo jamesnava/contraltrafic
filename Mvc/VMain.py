@@ -12,18 +12,12 @@ import Report
 import findCamera
 
 class VMain(object):	
-	objVideo=None		
-	#manejadorhilo
-	manejador=None
-	# direccion del video abierto
-	Address_video=None	
-	selectCamara=None	
-	#camara...
-	cap=None
+	objVideo=None	
 	def __init__(self):
 		self.numeroCamara=None
 		self.hilo=False
 		self.matriz_Image=None
+		self.cap=None
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
 		self.objVideo=Fotogramas.camara()	
@@ -84,7 +78,7 @@ class VMain(object):
 		separador2Left=ttk.Separator(self.Marco,orient="horizontal")
 		separador2Left.place(x=0,y=490,relwidth=10)
 
-		self.BTerminar=tk.Button(self.Marco,text="Capturar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.BTerminar=tk.Button(self.Marco,text="Liberar Cam.",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
 		self.BTerminar.configure(command=self.CapturaImagen,bd=5,overrelief="raised")
 		self.BTerminar.configure(width=9)
 		self.BTerminar.place(x=5,y=510)
@@ -171,35 +165,32 @@ class VMain(object):
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
-		#menu operaciones
-		Reportes=tk.Menu(self.BarraMenu,tearoff=0)
-		Reportes.add_command(label="Reporte")
-		Reportes.add_command(label="Exportar a PDF")
+		
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
-		self.BarraMenu.add_cascade(label="Acciones",menu=Reportes)
+		
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)	
 		
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
-			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)								
-			while True:
+			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)											
+			while (self.cap.isOpened()):
 				ret,FrameMatriz_original=self.cap.read()
-				FrameMatriz_scalado=cv2.resize(FrameMatriz_original,(int(FrameMatriz_original.shape[1]*0.50),int(FrameMatriz_original.shape[0]*0.50)),interpolation=cv2.INTER_AREA)				
-				
-				fotograma=self.objVideo.lectura(FrameMatriz_scalado)
-				self.EtiquetaVideo.config(width="320",height="240")
-				self.EtiquetaVideo.configure(image=fotograma)
-				self.EtiquetaVideo.image=fotograma
-				if self.hilo:
+				if ret:
+					FrameMatriz_scalado=cv2.resize(FrameMatriz_original,(int(FrameMatriz_original.shape[1]*0.50),int(FrameMatriz_original.shape[0]*0.50)),interpolation=cv2.INTER_AREA)			
 					self.matriz_Image=FrameMatriz_original
-					self.hilo=False					
-					break
+					fotograma=self.objVideo.lectura(FrameMatriz_scalado)
+					self.EtiquetaVideo.config(width="320",height="240")
+					self.EtiquetaVideo.configure(image=fotograma)
+					self.EtiquetaVideo.image=fotograma
+					if self.hilo:					
+						self.hilo=False					
+						break
 			self.cap.release()
-			self.cap=None
-				
+			self.cap=None				
 		else:
 			msgI.showinfo("Alerta!!","Seleccione Camara!!")
+
 	def InicioVideo(self):
 		self.numeroCamara=self.obj_Camera.numeroCamera		
 		self.manejador=threading.Thread(target=self.AbrirFotogramas)
@@ -207,7 +198,7 @@ class VMain(object):
 	def CapturaImagen(self):		
 		self.hilo=True			
 	def EventoMSalir(self,cap):
-		if cap==None:
+		if self.cap==None:
 			self.ventana.destroy()
 		else:
 			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")	
@@ -238,7 +229,10 @@ class VMain(object):
 		img1=self.objVideo.redimensionar_image(img1)
 
 		img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
-		Contorno_Dibujado,largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
+		largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
+		#prediccion del peso de la palta
+		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42)*10,round(ancho/13.42)*10)		
+		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),'Categoria A')
 		img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
 		img=self.objVideo.formato_Tkinter(img)
 		self.EtiquetaIBinarizada.config(width='320',height='240')
@@ -251,6 +245,10 @@ class VMain(object):
 		self.EtiquetaImagen3.config(width='320',height='240')
 		self.EtiquetaImagen3.configure(image=img1)
 		self.EtiquetaImagen3.image=img1
+	def datos_Table(self,largo,ancho,peso,descripcion):
+		largo=round(largo/13.42)
+		ancho=round(ancho/13.42)
+		self.Tabla_General.insert('','end',values=(largo,ancho,peso,descripcion))
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 

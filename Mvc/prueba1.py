@@ -5,7 +5,7 @@ from scipy import ndimage
 
 
 
-img=cv2.imread('image/41.jpg')
+'''img=cv2.imread('image/20.jpg')
 img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
 img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
 img=cv2.cvtColor(img_yuv,cv2.COLOR_YUV2BGR)
@@ -23,7 +23,7 @@ for i in range(mask.shape[0]):
 		if mask[i][j]>0:
 			cantidad+=1
 cv2.imshow('res',res)
-cv2.waitKey()
+cv2.waitKey()'''
 
 '''camara=cv2.VideoCapture(1,cv2.CAP_DSHOW)
 while True:
