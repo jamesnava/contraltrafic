@@ -120,13 +120,13 @@ class VMain(object):
 		btn_process.place(x=400,y=280)
 
 		#agregando la tabla
-		self.Tabla_General=ttk.Treeview(self.MarcoP,columns=('#1','#2','#3','#4','5'),show='headings')
+		self.Tabla_General=ttk.Treeview(self.MarcoP,columns=('#1','#2','#3','#4','#5'),show='headings')
 		self.Tabla_General.heading('#1',text='Ancho')
 		self.Tabla_General.heading('#2',text='Largo')
 		self.Tabla_General.heading('#3',text='Peso')
-		self.Tabla_General.heading('#4',text='Categoria')
-		self.Tabla_General.heading('#5',text='Descripcion')
-		self.Tabla_General.place(x=10,y=310,width=1000,height=200)
+		self.Tabla_General.heading('#4',text='Descripcion')
+		self.Tabla_General.heading('#5',text='Categoria')
+		self.Tabla_General.place(x=10,y=310,width=1150,height=200)
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.88),height=80)
 		
@@ -232,7 +232,7 @@ class VMain(object):
 		largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
 		#prediccion del peso de la palta
 		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42)*10,round(ancho/13.42)*10)		
-		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),'Categoria A')
+		
 		img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
 		img=self.objVideo.formato_Tkinter(img)
 		self.EtiquetaIBinarizada.config(width='320',height='240')
@@ -240,12 +240,22 @@ class VMain(object):
 		self.EtiquetaIBinarizada.image=img
 
 		#analisis de color
-		img1=self.objVideo.analisis_Color(img1)
+		img1,area_total,area_parcial=self.objVideo.analisis_Color(img1)
 		img1=self.objVideo.formato_Tkinter(img1)
 		self.EtiquetaImagen3.config(width='320',height='240')
 		self.EtiquetaImagen3.configure(image=img1)
 		self.EtiquetaImagen3.image=img1
-	def datos_Table(self,largo,ancho,peso,descripcion):
+		porcentaje_Verde=area_parcial/area_total
+		porcentaje_Verde=round(porcentaje_Verde,2)
+		if porcentaje_Verde>1:
+			porcentaje_Verde=1
+		porcentaje_ZonaAfectada=1-porcentaje_Verde
+		#print(f'representa {porcentaje*100}')
+
+		descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
+		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,'Categoria A')
+
+	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42)
 		ancho=round(ancho/13.42)
 		self.Tabla_General.insert('','end',values=(largo,ancho,peso,descripcion))
