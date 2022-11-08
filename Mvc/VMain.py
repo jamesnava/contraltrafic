@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 import Fotogramas
 import Report
 import findCamera
+import MEstadisticas
 
 class VMain(object):	
 	objVideo=None	
@@ -20,7 +21,8 @@ class VMain(object):
 		self.cap=None
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
-		self.objVideo=Fotogramas.camara()	
+		self.objVideo=Fotogramas.camara()
+		self.obj_Estadisticas=MEstadisticas.Estadisticas()
 		self.controlador_video=0
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
@@ -165,10 +167,14 @@ class VMain(object):
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
-		
+
+		#data
+		Menu_data=tk.Menu(self.BarraMenu,tearoff=0)
+		Menu_data.add_command(label="Estadisticas")
+		Menu_data.add_command(label='Vaciar Data',command=self.obj_Estadisticas.Vaciar_Data)
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
-		
+		self.BarraMenu.add_cascade(label='Datos almacenados',menu=Menu_data)
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)	
 		
 	def AbrirFotogramas(self,mirror=False):
@@ -254,6 +260,8 @@ class VMain(object):
 
 		descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
 		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,'Categoria A')
+		datos=[ancho,largo,round(peso_palta[0][0],2),descripcion,'Categoria A']
+		self.obj_Estadisticas.Insertar_Data(datos)
 
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42)
