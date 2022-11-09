@@ -59,7 +59,8 @@ class camara:
 				ancho=lado2 
 			else:
 				largo=lado2
-				ancho=lado1			
+				ancho=lado1
+			#print(lado1,lado2)			
 		return largo,ancho,box
 	def dibujar_delimitador(self,img,box,largo,ancho):
 		cv2.line(img,(box[0][0],box[0][1]),(box[1][0],box[1][1]),(255,255,255),1)
@@ -85,10 +86,12 @@ class camara:
 		image_bit=cv2.bitwise_and(image,image,mask=mask)'''
 		image_binary_green,area_parcial=self.optener_masqueraGreen(img)
 
+		verde=cv2.bitwise_and(img_copy,img_copy,mask=image_binary_green)
+		verde=cv2.cvtColor(verde,cv2.COLOR_BGR2HSV)
 		#area total
 	
 
-		return image_binary_green,area_total,area_parcial
+		return verde,area_total,area_parcial
 
 	#estimacion de los pesos de la palta
 	def Prediccion_peso(self,largo,ancho):
@@ -123,7 +126,7 @@ class camara:
 		upper_color=np.array([85,255,255])
 		mask_green=cv2.inRange(res,lower_color,upper_color)
 		kernel=np.ones((5,5),np.uint8)
-		dilatado=cv2.dilate(mask_green,kernel,iterations=1)
+		dilatado=cv2.dilate(mask_green,kernel,iterations=2)
 		#erosionado=cv2.erode(dilatado,kernel,iterations=1)
 		area=self.area_verde(dilatado)
 		return dilatado,area

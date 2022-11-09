@@ -33,7 +33,7 @@ class VMain(object):
 		#self.ventana.overrideredirect(1)
 		self.ventana.protocol("WM_DELETE_WINDOW",lambda:self.EventoMSalir(self.cap))
 		self.ventana.iconbitmap('../images/favicon.ico')
-		self.ventana.resizable(0,0)
+		#self.ventana.resizable(0,0)
 		self.ventana.configure(bg="#DDFFDD")
 		#agregando marco izquierda
 		self.Marco=tk.Frame(self.ventana,width=130,height=650)
@@ -123,32 +123,39 @@ class VMain(object):
 
 		#agregando la tabla
 		self.Tabla_General=ttk.Treeview(self.MarcoP,columns=('#1','#2','#3','#4','#5'),show='headings')
-		self.Tabla_General.heading('#1',text='Ancho')
-		self.Tabla_General.heading('#2',text='Largo')
-		self.Tabla_General.heading('#3',text='Peso')
-		self.Tabla_General.heading('#4',text='Descripcion')
-		self.Tabla_General.heading('#5',text='Categoria')
+		self.Tabla_General.heading('#1',text='Largo (cm)')
+		self.Tabla_General.heading('#1',anchor='center')
+		self.Tabla_General.heading('#2',text='Ancho (cm)')
+		self.Tabla_General.heading('#2',anchor='center')
+		self.Tabla_General.heading('#3',text='Peso Estimado')
+		self.Tabla_General.heading('#3',anchor='center')
+		self.Tabla_General.heading('#4',text='Estado de Producto')
+		self.Tabla_General.heading('#4',anchor='center')
+		self.Tabla_General.heading('#5',text='Clasificación')
+		self.Tabla_General.heading('#5',anchor='center')
 		self.Tabla_General.place(x=10,y=310,width=1150,height=200)
 		#marco bottom
 		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.88),height=80)
 		
-		self.MarcoBottom.config(bg="#D1CBC7")
+		self.MarcoBottom.config(bg="#19330E")
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
 		self.MarcoBottom.place(x=130,y=575)
 			
 		
 		#cantidad de tiempo
-		self.segundo=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		self.segundo.place(x=5,y=0)
+		font_=('Courier',16,'bold')
+		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
+		self.Cantidad_Palta=tk.Label(self.MarcoBottom,text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
+		self.Cantidad_Palta.place(x=5,y=20)
+		peso=self.obj_Estadisticas.peso_Total()
+		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
+		self.Peso_Total.place(x=300,y=20)
 
-		self.minuto=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		#self.minuto.pack(side="right",padx=2)
-
-		self.hora=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
+		#self.hora=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
 		#self.hora.pack(side="right",padx=5)
 
-		self.EtiquetaTiempo=tk.Label(self.MarcoBottom,text="Tiempo :",font=('Courier',14,"bold","italic"))
+		#self.EtiquetaTiempo=tk.Label(self.MarcoBottom,text="Tiempo :",font=('Courier',14,"bold","italic"))
 		#self.EtiquetaTiempo.pack(side="right",padx=1)
 		self.BarraMenu()
 		#hilo
@@ -171,11 +178,15 @@ class VMain(object):
 		#data
 		Menu_data=tk.Menu(self.BarraMenu,tearoff=0)
 		Menu_data.add_command(label="Estadisticas")
-		Menu_data.add_command(label='Vaciar Data',command=self.obj_Estadisticas.Vaciar_Data)
+		Menu_data.add_command(label='Vaciar Data',command=self.vaciar_data)
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
 		self.BarraMenu.add_cascade(label='Datos almacenados',menu=Menu_data)
-		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)	
+		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
+	def vaciar_data(self):
+		self.obj_Estadisticas.Vaciar_Data(self.Cantidad_Palta)
+		#cantidad=self.obj_Estadisticas.Cantidad_Analizado()
+	
 		
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
@@ -236,6 +247,7 @@ class VMain(object):
 
 		img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
 		largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
+		
 		#prediccion del peso de la palta
 		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42)*10,round(ancho/13.42)*10)		
 		
@@ -263,10 +275,15 @@ class VMain(object):
 		datos=[ancho,largo,round(peso_palta[0][0],2),descripcion,'Categoria A']
 		self.obj_Estadisticas.Insertar_Data(datos)
 
+		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
+		peso=self.obj_Estadisticas.peso_Total()
+		font_=('Courier',16,'bold')
+		self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
+		self.Peso_Total.config(text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42)
 		ancho=round(ancho/13.42)
-		self.Tabla_General.insert('','end',values=(largo,ancho,peso,descripcion))
+		self.Tabla_General.insert('',0,values=(largo,ancho,peso,descripcion))
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 

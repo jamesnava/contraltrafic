@@ -33,13 +33,29 @@ class database(object):
 		except Exception as e:
 			raise e
 		return rows
+	def cantidad_data(self):
+		try:
+			self.cursor.execute('SELECT COUNT(*) AS CANTIDAD FROM tableMediciones')
+			rows=self.cursor.fetchall()
+
+		except Exception as e:
+			raise e
+		return rows
+	def peso_data(self):
+		try:
+			self.cursor.execute('SELECT SUM(peso_M) AS PESO FROM tableMediciones')
+			rows=self.cursor.fetchall()
+
+		except Exception as e:
+			raise e
+		return rows
 	def eliminar(self):
 		try:
 			self.cursor.execute('DELETE FROM tableMediciones')
 			self.conection.commit()
+
 		except Exception as e:
 			raise e
-
 
 
 
