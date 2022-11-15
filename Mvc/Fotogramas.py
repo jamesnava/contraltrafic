@@ -96,7 +96,8 @@ class camara:
 	#estimacion de los pesos de la palta
 	def Prediccion_peso(self,largo,ancho):
 		modelo=joblib.load('modelo.joblib')
-		peso=modelo.predict([[largo,ancho]])
+		area=largo*ancho
+		peso=modelo.predict([[area]])
 		return peso
 	def binarizacion_total(self,img):
 		gray_image=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)

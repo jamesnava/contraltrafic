@@ -11,6 +11,7 @@ import Fotogramas
 import Report
 import findCamera
 import MEstadisticas
+import usuario
 
 class VMain(object):	
 	objVideo=None	
@@ -23,6 +24,7 @@ class VMain(object):
 		self.obj_Camera=findCamera.BuscarCamara()
 		self.objVideo=Fotogramas.camara()
 		self.obj_Estadisticas=MEstadisticas.Estadisticas()
+		self.usuario=usuario.UsuarioGUI()
 		self.controlador_video=0
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
@@ -117,9 +119,9 @@ class VMain(object):
 		self.EtiquetaImagen3.place(x=850,y=20)
 		
 
-		btn_process=tk.Button(self.MarcoP,text='Procesar')
+		btn_process=tk.Button(self.MarcoP,text='Procesar',border=3,width=25,cursor='hand2',background="deepskyblue")
 		btn_process.config(command=self.deteccion_bordes)
-		btn_process.place(x=400,y=280)
+		btn_process.place(x=500,y=280)
 
 		#agregando la tabla
 		self.Tabla_General=ttk.Treeview(self.MarcoP,columns=('#1','#2','#3','#4','#5'),show='headings')
@@ -149,8 +151,8 @@ class VMain(object):
 		self.Cantidad_Palta=tk.Label(self.MarcoBottom,text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
 		self.Cantidad_Palta.place(x=5,y=20)
 		peso=self.obj_Estadisticas.peso_Total()
-		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
-		self.Peso_Total.place(x=300,y=20)
+		#self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
+		#self.Peso_Total.place(x=300,y=20)
 
 		#self.hora=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
 		#self.hora.pack(side="right",padx=5)
@@ -179,9 +181,15 @@ class VMain(object):
 		Menu_data=tk.Menu(self.BarraMenu,tearoff=0)
 		Menu_data.add_command(label="Estadisticas")
 		Menu_data.add_command(label='Vaciar Data',command=self.vaciar_data)
+
+		#personal
+		Menu_personal=tk.Menu(self.BarraMenu,tearoff=0)
+		Menu_personal.add_command(label="Insertar Nuevo",command=self.usuario.Top_insertar)
+		Menu_personal.add_command(label='Reporte del Personal')
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
-		self.BarraMenu.add_cascade(label='Datos almacenados',menu=Menu_data)
+		self.BarraMenu.add_cascade(label='Reportes',menu=Menu_data)
+		self.BarraMenu.add_cascade(label='Personal',menu=Menu_personal)
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
 	def vaciar_data(self):
 		self.obj_Estadisticas.Vaciar_Data(self.Cantidad_Palta)
@@ -249,7 +257,7 @@ class VMain(object):
 		largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
 		
 		#prediccion del peso de la palta
-		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42)*10,round(ancho/13.42)*10)		
+		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42,3),round(ancho/13.42,3))		
 		
 		img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
 		img=self.objVideo.formato_Tkinter(img)
@@ -281,8 +289,8 @@ class VMain(object):
 		self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
 		self.Peso_Total.config(text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
-		largo=round(largo/13.42)
-		ancho=round(ancho/13.42)
+		largo=round(largo/13.42,3)
+		ancho=round(ancho/13.42,3)
 		self.Tabla_General.insert('',0,values=(largo,ancho,peso,descripcion))
 
 	def informacionAutor(self):

@@ -28,7 +28,7 @@ class BuscarCamara:
 		botonAceptar.configure(width=9,command=self.event_Selection)
 		botonAceptar.place(x=160,y=100)
 		self.top1.grab_set()
-		self.top1.mainloop()
+		#self.top1.mainloop()
 	def event_Selection(self):
 		self.numeroCamera=self.selectCamara.get()
 		self.top1.destroy()
