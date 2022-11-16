@@ -15,12 +15,15 @@ class Estadisticas(object):
 			label.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
 
 	def Insertar_Data(self,datos):
-		self.obj_database.insertar_mediciones(datos[0],datos[1],datos[2],datos[3],datos[4])
+		self.obj_database.insertar_mediciones(datos[0],datos[1],datos[2],datos[3],datos[4],datos[5],datos[6],datos[7],datos[8])
 	def Cantidad_Analizado(self):
 		rows=self.obj_database.cantidad_datamediciones()
 		return rows[0][0]
 	def peso_Total(self):
 		rows=self.obj_database.peso_datamediciones()
+		return rows[0][0]
+	def dni_user(self,dni):
+		rows=self.obj_database.consultar_dni(dni)
 		return rows[0][0]
 		
 

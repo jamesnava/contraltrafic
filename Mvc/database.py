@@ -29,6 +29,8 @@ class database(object):
 			descripcion TEXT,
 			categoria TEXT,
 			fecha date,
+			areaTotal REAL,
+			areaLimpia REAL,
 			dni TEXT,
 			FOREIGN KEY (dni) REFERENCES usuario(dni)
 			)""")
@@ -36,14 +38,16 @@ class database(object):
 		except sqlite3.Error as e:
 			messagebox.showinfo('Alerta',f'consulte con el administrador codigo de error : {e}')
 
-	def insertar_mediciones(self,ancho,largo,peso,descripcion,categoria):
+	def insertar_mediciones(self,ancho,largo,peso,descripcion,categoria,fecha,areaTotal,areaLimpia,dni):
 		try:
-			sql=f"INSERT INTO tableMediciones VALUES((SELECT MAX(id_M) FROM tableMediciones)+1,{ancho},{largo},{peso},'{descripcion}','{categoria}')"
+			sql=f"INSERT INTO tableMediciones VALUES((SELECT MAX(id_M) FROM tableMediciones)+1,{ancho},{largo},{peso},'{descripcion}','{categoria}','{fecha}',{areaTotal},{areaLimpia},'{dni}')"
 			self.cursor.execute(sql)
 			self.conection.commit()
 
 		except Exception as e:
 			raise e
+	def consultar_UserMediciones(self,dni):
+		pass
 	def consultar_mediciones(self):
 		try:
 			self.cursor.execute('SELECT * FROM tableMediciones')
@@ -80,5 +84,19 @@ class database(object):
 			self.conection.commit()
 		except Exception as e:
 			raise e
+	def consultar_Usuario(self):
+		try:
+			self.cursor.execute('SELECT * FROM usuario')
+			rows=self.cursor.fetchall()
+		except Exception as e:
+			raise e
+		return rows
+	def consultar_dni(self,dni):
+		try:
+			self.cursor.execute(f"SELECT count(*) FROM usuario WHERE dni='{dni}'")
+			rows=self.cursor.fetchall()			
+		except Exception as e:
+			raise e
+		return rows		
 
 

@@ -62,4 +62,31 @@ class UsuarioGUI(object):
 			messagebox.showinfo('Alerta','Verifique el campo Dni')
 			self.Top_Insertar.destroy()
 
+	def Top_ReportePersonal(self):
+		self.Windows_ReportePersonal=Toplevel()
+		self.Windows_ReportePersonal.geometry('860x450')
+		self.Windows_ReportePersonal.title('Reporte del Personal')
 		
+		etiqueta=Label(self.Windows_ReportePersonal,text='Buscar')
+		etiqueta.place(x=10,y=40)
+		self.Entry_sDni=ttk.Entry(self.Windows_ReportePersonal,width=40)
+		self.Entry_sDni.place(x=100,y=40)
+		self.table=ttk.Treeview(self.Windows_ReportePersonal,columns=('#1','#2','#3','#4','#5'),show='headings')		
+		self.table.heading("#1",text="DNI")
+		self.table.column("#1",width=60,anchor="center")
+		self.table.heading("#2",text="NOMBRES")
+		self.table.column("#2",width=200,anchor="center")
+		self.table.heading("#3",text="APELLIDOS")
+		self.table.column("#3",width=200,anchor="center")
+		self.table.heading("#4",text="TELEFONO")
+		self.table.column("#4",width=80,anchor="center")		
+		self.table.heading("#5",text="DIRECCION")					
+		self.table.place(x=10,y=70,width=840,height=350)
+		self.LlenarTablePersonal()				
+		self.Windows_ReportePersonal.focus()
+		self.Windows_ReportePersonal.grab_set()
+	def LlenarTablePersonal(self):
+		rows=self.obj_database.consultar_Usuario()
+
+		for i in range(len(rows)):		
+			self.table.insert('','end',values=(rows[i][0],rows[i][1],rows[i][2],rows[i][3],rows[i][4]))

@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import threading 
 import tkinter.messagebox as msgI
+from tkinter.simpledialog import askstring
 from matplotlib import pyplot as plt
 #clases...
 import Fotogramas
@@ -12,14 +13,17 @@ import Report
 import findCamera
 import MEstadisticas
 import usuario
+from datetime import datetime
 
 class VMain(object):	
 	objVideo=None	
 	def __init__(self):
+		self.fecha_actual=datetime.now()
 		self.numeroCamara=None
 		self.hilo=False
 		self.matriz_Image=None
 		self.cap=None
+		self.Address_video=None
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
 		self.objVideo=Fotogramas.camara()
@@ -151,14 +155,11 @@ class VMain(object):
 		self.Cantidad_Palta=tk.Label(self.MarcoBottom,text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
 		self.Cantidad_Palta.place(x=5,y=20)
 		peso=self.obj_Estadisticas.peso_Total()
-		#self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
-		#self.Peso_Total.place(x=300,y=20)
+		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
+		self.Peso_Total.place(x=300,y=20)	
 
-		#self.hora=tk.Label(self.MarcoBottom,text="0",font=('Courier',14),width=4)
-		#self.hora.pack(side="right",padx=5)
-
-		#self.EtiquetaTiempo=tk.Label(self.MarcoBottom,text="Tiempo :",font=('Courier',14,"bold","italic"))
-		#self.EtiquetaTiempo.pack(side="right",padx=1)
+		self.EtiquetaUser=tk.Label(self.MarcoBottom,text="NULL",font=('Courier',14,"bold","italic"))
+		self.EtiquetaUser.place(x=int(screen_width*0.75),y=20)
 		self.BarraMenu()
 		#hilo
 		
@@ -172,7 +173,7 @@ class VMain(object):
 		AyudaM.add_command(label="Acerca de...",command= self.informacionSoftware)
 		#menú configuracion...
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
-		#ConfiguracionM.add_command(label="seleccionar Camara",command=self.FindCamera)
+		ConfiguracionM.add_command(label="Configurar Propietario",command=self.config_Usuario)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
 		ConfiguracionM.add_command(label="Salir",command=lambda:self.EventoMSalir(self.cap))
@@ -185,7 +186,7 @@ class VMain(object):
 		#personal
 		Menu_personal=tk.Menu(self.BarraMenu,tearoff=0)
 		Menu_personal.add_command(label="Insertar Nuevo",command=self.usuario.Top_insertar)
-		Menu_personal.add_command(label='Reporte del Personal')
+		Menu_personal.add_command(label='Reporte del Personal',command=self.usuario.Top_ReportePersonal)
 		#agregando los menues...
 		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
 		self.BarraMenu.add_cascade(label='Reportes',menu=Menu_data)
@@ -195,7 +196,12 @@ class VMain(object):
 		self.obj_Estadisticas.Vaciar_Data(self.Cantidad_Palta)
 		#cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 	
-		
+	def config_Usuario(self):
+		dni=askstring('Configurar Usuario','Ingrese el numero de su Dni: \t\t')
+		if self.obj_Estadisticas.dni_user(dni)!=0:
+			self.EtiquetaUser['text']=dni
+		else:
+			msgI.showinfo('Alerta','DNI no encontrado, Registre en el apartado Personal')
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
 			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)											
@@ -217,9 +223,13 @@ class VMain(object):
 			msgI.showinfo("Alerta!!","Seleccione Camara!!")
 
 	def InicioVideo(self):
-		self.numeroCamara=self.obj_Camera.numeroCamera		
-		self.manejador=threading.Thread(target=self.AbrirFotogramas)
-		self.manejador.start()	
+		if self.EtiquetaUser.cget('text')!='NULL':			
+			self.numeroCamara=self.obj_Camera.numeroCamera		
+			self.manejador=threading.Thread(target=self.AbrirFotogramas)
+			self.manejador.start()
+		else:
+			msgI.showinfo('Alerta','Configure Propietario')
+
 	def CapturaImagen(self):		
 		self.hilo=True			
 	def EventoMSalir(self,cap):
@@ -228,8 +238,12 @@ class VMain(object):
 		else:
 			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")	
 	def abrirDireccion(self,hilo):
-		hilo=True
-		self.Address_video=filedialog.askopenfilename()		
+		if self.EtiquetaUser.cget('text')!='NULL':
+			hilo=True
+			self.Address_video=filedialog.askopenfilename()
+		else:
+			msgI.showinfo('Alerta','Configure Propietario')
+
 	def abrirImagen(self):
 		if self.Address_video!=None:			
 			img_source=cv2.imread(self.Address_video)
@@ -276,18 +290,21 @@ class VMain(object):
 		if porcentaje_Verde>1:
 			porcentaje_Verde=1
 		porcentaje_ZonaAfectada=1-porcentaje_Verde
-		#print(f'representa {porcentaje*100}')
-
 		descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
 		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,'Categoria A')
-		datos=[ancho,largo,round(peso_palta[0][0],2),descripcion,'Categoria A']
+
+		#se formatea la fecha actual
+		fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
+
+		#ingresando a la base de datos
+		datos=[ancho,largo,round(peso_palta[0][0],2),descripcion,'Categoria A',fecha,area_total,area_parcial,self.EtiquetaUser.cget('text')]
 		self.obj_Estadisticas.Insertar_Data(datos)
 
 		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 		peso=self.obj_Estadisticas.peso_Total()
 		font_=('Courier',16,'bold')
 		self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
-		self.Peso_Total.config(text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
+		self.Peso_Total.config(text=f"Peso Total: {round(peso/1000,2)} KG",font=font_,bg='#19330E',fg='white')
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42,3)
 		ancho=round(ancho/13.42,3)
