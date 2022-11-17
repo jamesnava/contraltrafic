@@ -153,8 +153,10 @@ class VMain(object):
 		font_=('Courier',16,'bold')
 		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 		self.Cantidad_Palta=tk.Label(self.MarcoBottom,text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
-		self.Cantidad_Palta.place(x=5,y=20)
+		self.Cantidad_Palta.place(x=5,y=20)		
 		peso=self.obj_Estadisticas.peso_Total()
+		if peso==None:
+			peso=0		
 		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
 		self.Peso_Total.place(x=300,y=20)	
 
@@ -173,6 +175,8 @@ class VMain(object):
 		AyudaM.add_command(label="Acerca de...",command= self.informacionSoftware)
 		#menú configuracion...
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
+		ConfiguracionM.add_command(label="Configurar Precio")
+		ConfiguracionM.add_command(label="Cargar Categorias Palta")
 		ConfiguracionM.add_command(label="Configurar Propietario",command=self.config_Usuario)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())
@@ -188,7 +192,8 @@ class VMain(object):
 		Menu_personal.add_command(label="Insertar Nuevo",command=self.usuario.Top_insertar)
 		Menu_personal.add_command(label='Reporte del Personal',command=self.usuario.Top_ReportePersonal)
 		#agregando los menues...
-		self.BarraMenu.add_cascade(label="Configuracion",menu=ConfiguracionM)
+		
+		self.BarraMenu.add_cascade(label="Configuraciones",menu=ConfiguracionM)
 		self.BarraMenu.add_cascade(label='Reportes',menu=Menu_data)
 		self.BarraMenu.add_cascade(label='Personal',menu=Menu_personal)
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
