@@ -78,6 +78,26 @@ class database(object):
 
 		except Exception as e:
 			raise e
+	def mediciones_P(self,dni,fechai,fecha2):
+		try:
+			self.cursor.execute(f"SELECT * FROM tableMediciones WHERE dni='{dni}' AND fecha BETWEEN '{fechai}' AND '{fecha2}'")
+			#self.cursor.execute('SELECT * FROM tableMediciones')
+			rows=self.cursor.fetchall()
+
+		except Exception as e:
+			raise e
+		return rows
+	def mediciones_Update(self):
+		
+		try:
+			self.cursor.execute("UPDATE tableMediciones SET categoria='A'")
+			#self.cursor.execute('SELECT * FROM tableMediciones')
+			self.conection.commit()
+
+		except Exception as e:
+			raise e
+
+
 	def insertar_usuario(self,datos):
 		try:
 			self.cursor.execute(f"""INSERT INTO usuario VALUES('{datos[0]}','{datos[1]}','{datos[2]}','{datos[3]}','{datos[4]}')""")
@@ -100,3 +120,5 @@ class database(object):
 		return rows		
 
 
+#obj=database()
+#obj.mediciones_Update()

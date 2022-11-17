@@ -6,7 +6,6 @@ import numpy as np
 import threading 
 import tkinter.messagebox as msgI
 from tkinter.simpledialog import askstring
-from matplotlib import pyplot as plt
 #clases...
 import Fotogramas
 import Report
@@ -29,6 +28,7 @@ class VMain(object):
 		self.objVideo=Fotogramas.camara()
 		self.obj_Estadisticas=MEstadisticas.Estadisticas()
 		self.usuario=usuario.UsuarioGUI()
+		self.obj_reporte=Report.Reports()
 		self.controlador_video=0
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
@@ -180,7 +180,7 @@ class VMain(object):
 
 		#data
 		Menu_data=tk.Menu(self.BarraMenu,tearoff=0)
-		Menu_data.add_command(label="Estadisticas")
+		Menu_data.add_command(label="Estadisticas",command=self.obj_reporte.Dibujar_Reporte)
 		Menu_data.add_command(label='Vaciar Data',command=self.vaciar_data)
 
 		#personal
