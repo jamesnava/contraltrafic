@@ -71,7 +71,7 @@ class UsuarioGUI(object):
 		etiqueta.place(x=10,y=40)
 		self.Entry_sDni=ttk.Entry(self.Windows_ReportePersonal,width=40)
 		self.Entry_sDni.place(x=100,y=40)
-		self.table=ttk.Treeview(self.Windows_ReportePersonal,columns=('#1','#2','#3','#4','#5'),show='headings')		
+		self.table=ttk.Treeview(self.Windows_ReportePersonal,columns=('#1','#2','#3','#4','#5','#6','#7'),show='headings')		
 		self.table.heading("#1",text="DNI")
 		self.table.column("#1",width=60,anchor="center")
 		self.table.heading("#2",text="NOMBRES")

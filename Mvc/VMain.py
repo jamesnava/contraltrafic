@@ -12,6 +12,7 @@ import Report
 import findCamera
 import MEstadisticas
 import usuario
+import TopGenerales
 from datetime import datetime
 
 class VMain(object):	
@@ -29,6 +30,7 @@ class VMain(object):
 		self.obj_Estadisticas=MEstadisticas.Estadisticas()
 		self.usuario=usuario.UsuarioGUI()
 		self.obj_reporte=Report.Reports()
+		self.obj_TopGeneral=TopGenerales.Categoria()
 		self.controlador_video=0
 		#configuracion basica de la ventana
 		self.ventana=tk.Tk()
@@ -176,7 +178,7 @@ class VMain(object):
 		#menú configuracion...
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
 		ConfiguracionM.add_command(label="Configurar Precio")
-		ConfiguracionM.add_command(label="Cargar Categorias Palta")
+		ConfiguracionM.add_command(label="Cargar Categorias Palta",command=self.obj_TopGeneral.categorias)
 		ConfiguracionM.add_command(label="Configurar Propietario",command=self.config_Usuario)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
 		ConfiguracionM.add_command(label="Minimizar",command=lambda :self.ventana.iconify())

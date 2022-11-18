@@ -22,7 +22,11 @@ class database(object):
 				""")
 			self.cursor.execute("""
 				CREATE TABLE IF NOT EXISTS calibre(
-					codigo TEXT PRIMARY KEY,
+					cod_calibre TEXT PRIMARY KEY,
+					Superior_peso REAL,
+					Inferior_peso REAL,
+					ZonaAfectadaInferior REAL,
+					ZonaAfecataSuperior REAL,
 					denominacion TEXT,
 					desc_calibre TEXT
 					)
@@ -35,30 +39,20 @@ class database(object):
 					unidad TEXT,
 					FOREIGN KEY (codigo) REFERENCES calibre (codigo)
 					)
-				""")
-			self.cursor.execute("""
-
-				CREATE TABLE IF NOT EXISTS peso_Conf(
-					codigo TEXT PRIMARY KEY,
-					Superior_peso REAL,
-					Inferior_peso REAL,
-					FOREIGN KEY (codigo) REFERENCES calibre(codigo)
-					)
-				""")
+				""")			
 
 			self.cursor.execute("""CREATE TABLE IF NOT EXISTS tableMediciones(
 			id_M INTEGER  PRIMARY KEY AUTOINCREMENT,
 			ancho_M REAL,
 			largo_M REAL,
 			peso_M REAL,
-			descripcion TEXT,
-			categoria TEXT,
+			descripcion TEXT,			
 			fecha date,
 			areaTotal REAL,
 			areaLimpia REAL,
 			dni TEXT,
-			codigo TEXT,
-			FOREIGN KEY (codigo) REFERENCES peso_Conf(codigo),
+			cod_calibre TEXT,
+			FOREIGN KEY (cod_calibre) REFERENCES calibre(cod_calibre),
 			FOREIGN KEY (dni) REFERENCES usuario(dni)
 			)""")
 			
@@ -145,18 +139,38 @@ class database(object):
 		except Exception as e:
 			raise e
 		return rows		
-	def insertar_calibre(self,codigo,denominacion,desc_calibre):
+	def insertar_calibre(self,codigo,Superior_peso,Inferior_peso,ZonaAfectadaInferior,ZonaAfectadaSuperior,denominacion,desc_calibre):
 		try:
-			self.cursor.execute(f"""INSERT INTO calibre VALUES('{codigo}','{denominacion}','{desc_calibre}')""")
+			self.cursor.execute(f"""INSERT INTO calibre VALUES('{codigo}',
+				{Superior_peso},{Inferior_peso},{ZonaAfectadaInferior},{ZonaAfectadaSuperior},
+				'{denominacion}','{desc_calibre}')""")
 			self.conection.commit()
 		except Exception as e:
 			raise e
 	def consultar_calibre(self):
 		try:
 			self.cursor.execute("""SELECT * FROM calibre""")
-			self.cursor.fetchall()
+			rows=self.cursor.fetchall()
 		except Exception as e:
 			raise e
+		return rows
+	def consultar_calibreCond(self,codigo):
+		try:
+			self.cursor.execute(f"""SELECT * FROM calibre WHERE codi_calibre={codigo}""")
+			rows=self.cursor.fetchall()
+		except Exception as e:
+			raise e
+		return rows
+
+	def update_calibre(self,codigo,Superior_peso,Inferior_peso,ZonaAfectadaInferior,ZonaAfectadaSuperior,desc_calibre):		
+		try:
+			self.cursor.execute(f"""UPDATE calibre SET Superior_peso={Superior_peso},Inferior_peso={Inferior_peso},ZonaAfectadaInferior={ZonaAfectadaInferior},ZonaAfecataSuperior={ZonaAfectadaSuperior},desc_calibre='{desc_calibre}' WHERE cod_calibre='{codigo}'""")
+			self.conection.commit()
+			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
+		except Exception as e:
+			raise e
+
+			
 
 
 
