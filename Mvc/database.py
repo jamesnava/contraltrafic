@@ -161,6 +161,7 @@ class database(object):
 		except Exception as e:
 			raise e
 		return rows
+	
 
 	def update_calibre(self,codigo,Superior_peso,Inferior_peso,ZonaAfectadaInferior,ZonaAfectadaSuperior,desc_calibre):		
 		try:
@@ -193,7 +194,10 @@ class database(object):
 			raise e
 
 
-			
+
+
+
+
 
 
 

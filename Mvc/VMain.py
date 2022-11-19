@@ -297,25 +297,35 @@ class VMain(object):
 		if porcentaje_Verde>1:
 			porcentaje_Verde=1
 		porcentaje_ZonaAfectada=1-porcentaje_Verde
-		descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
-		self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,'Categoria A')
+		
 
 		#se formatea la fecha actual
 		fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
-
-		#ingresando a la base de datos
-		datos=[ancho,largo,round(peso_palta[0][0],2),descripcion,'Categoria A',fecha,area_total,area_parcial,self.EtiquetaUser.cget('text')]
-		self.obj_Estadisticas.Insertar_Data(datos)
-
-		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 		peso=self.obj_Estadisticas.peso_Total()
-		font_=('Courier',16,'bold')
-		self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
-		self.Peso_Total.config(text=f"Peso Total: {round(peso/1000,2)} KG",font=font_,bg='#19330E',fg='white')
+		
+		if peso==None:
+			peso=0.0
+		
+		peso=round(peso/1000,2)
+		codi_calibre,categoria=self.obj_Estadisticas.Asignacion_Calibre(peso_palta,round(porcentaje_ZonaAfectada*100,3))
+
+		if len(codi_calibre)!=0 and len(categoria)!=0:
+			#ingresando a la base de datos
+			datos=[ancho,largo,round(peso_palta[0][0],2),categoria,fecha,area_total,area_parcial,self.EtiquetaUser.cget('text'),codi_calibre]
+			self.obj_Estadisticas.Insertar_Data(datos)
+			cantidad=self.obj_Estadisticas.Cantidad_Analizado()
+		
+			descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
+			self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,categoria)
+			font_=('Courier',16,'bold')
+			self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
+			self.Peso_Total.config(text=f"Peso Total: {peso} KG",font=font_,bg='#19330E',fg='white')
+		else:
+			msgI.showinfo('Notificacion','No se considera en ninguna categoria')
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42,3)
 		ancho=round(ancho/13.42,3)
-		self.Tabla_General.insert('',0,values=(largo,ancho,peso,descripcion))
+		self.Tabla_General.insert('',0,values=(largo,ancho,peso,descripcion,categoria))
 
 	def informacionAutor(self):
 		msgI.showinfo("about Autor","Desarrollado por el Bachiller en Ingenieria" 

@@ -25,6 +25,49 @@ class Estadisticas(object):
 	def dni_user(self,dni):
 		rows=self.obj_database.consultar_dni(dni)
 		return rows[0][0]
+	def Asignacion_Calibre(self,peso,area):
+		rows=self.obj_database.consultar_calibre()
+		rows1=self.obj_database.consultar_calibre()
+		
+		datos=[]
+		pesos=[]
+		for j in range(len(rows1)):
+			datos.append(rows1[j][4])
+			pesos.append(rows1[j][2])
+		codigo=''
+		Categoria=''
+		
+		for i in range(len(rows)):
+			#print(rows[i][2],rows[i][1],rows[i][3],rows[i][4])
+
+			if (rows[i][2]<=peso and rows[i][4]>=area) and int(rows[i][0])==1:
+				codigo=rows[i][0]
+				Categoria=rows[i][6]
+			elif (rows[i][2]<=peso and peso<rows[i][1]) and area<=rows[i][4] and int(rows[i][0])==2:
+				codigo=rows[i][0]
+				Categoria=rows[i][6]
+
+			elif ((rows[i][2]<=peso and peso<rows[i][1]) and area<=rows[i][4] and int(rows[i][0])==3):
+				codigo=rows[i][0]
+				Categoria=rows[i][6]
+
+			elif ((peso>=rows[i][1]) and int(rows[i][0])==2) and (datos[0]<area<=datos[1]):
+				codigo=rows[i][0]
+				Categoria=rows[i][6]
+
+			elif ((peso>rows[i][1]) and int(rows[i][0])==3) and (datos[1]<area<=datos[2]):
+				codigo='3'
+				Categoria='Se considera de Tercera'
+
+			elif ((pesos[1]>peso>rows[i][1]) and int(rows[i][0])==3) and (area<=datos[2]):
+				codigo=rows[i][0]
+				Categoria=rows[i][6]
+			
+		return codigo,Categoria
+
+
+
+
 		
 
 		

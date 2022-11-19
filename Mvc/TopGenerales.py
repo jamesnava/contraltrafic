@@ -40,7 +40,7 @@ class Categoria(object):
 		rows=self.obj_database.consultar_calibre()	
 		if rows!=None:
 			for i in range(len(rows)):
-				self.table.insert('','end',values=(rows[i][0],rows[i][1],rows[i][2],rows[i][3],rows[i][4],rows[i][5],rows[i][6]))
+				self.table.insert('','end',values=(rows[i][0],rows[i][2],rows[i][1],rows[i][3],rows[i][4],rows[i][5],rows[i][6]))
 
 	def Top_Update(self,event):
 		codi=''
