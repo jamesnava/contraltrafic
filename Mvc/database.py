@@ -37,7 +37,7 @@ class database(object):
 					codigo TEXT PRIMARY KEY,
 					precio REAL,
 					unidad TEXT,
-					FOREIGN KEY (codigo) REFERENCES calibre (codigo)
+					FOREIGN KEY (codigo) REFERENCES calibre (cod_calibre)
 					)
 				""")			
 
@@ -169,6 +169,29 @@ class database(object):
 			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
 		except Exception as e:
 			raise e
+
+	def insertar_Precio(self,codigo,precio,unidad):
+		try:
+			self.cursor.execute(f"""INSERT INTO precio VALUES('{codigo}',{precio},'{unidad}')""")
+			self.conection.commit()
+		except Exception as e:
+			raise e
+	def consultar_precio(self):
+		try:
+			self.cursor.execute("""SELECT P.codigo,P.precio,P.Unidad,CAL.denominacion FROM precio AS P INNER JOIN calibre AS CAL ON P.codigo=CAL.cod_calibre""")
+			rows=self.cursor.fetchall()
+		except Exception as e:
+			raise e
+		return rows
+
+	def update_precio(self,codigo,precio):		
+		try:
+			self.cursor.execute(f"""UPDATE precio SET precio={precio} WHERE codigo='{codigo}'""")
+			self.conection.commit()
+			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
+		except Exception as e:
+			raise e
+
 
 			
 

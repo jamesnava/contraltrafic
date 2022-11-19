@@ -49,6 +49,8 @@ class Reports:
 		self.top2=tk.Toplevel()
 		self.top2.title("Reporte Personal")
 		self.top2.geometry("1000x500")
+		self.top2.resizable(0,0)
+		self.top2.grab_set()
 		etiqueta=tk.Label(self.top2,text='Ingrese su dni: ')
 		etiqueta.grid(row=0,column=0)
 		self.dni=ttk.Entry(self.top2,width=20)

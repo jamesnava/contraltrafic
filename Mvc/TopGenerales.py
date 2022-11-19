@@ -131,10 +131,87 @@ class Categoria(object):
 		self.Top_UCategoria.destroy()
 
 	def Top_Precio(self):
-		pass
+		self.Top_precio=Toplevel()
+		self.Top_precio.title('Precios por categorias')
+		self.Top_precio.geometry('550x250')
+		self.tablePrecio=ttk.Treeview(self.Top_precio,columns=('#1','#2','#3','#4'),show='headings')
+		self.tablePrecio.heading("#1",text="Codigo")
+		self.tablePrecio.column("#1",width=60,anchor="center")
+		self.tablePrecio.heading("#2",text="Categoria")
+		self.tablePrecio.column("#2",width=100,anchor="center")
+		self.tablePrecio.heading("#3",text="Precio")
+		self.tablePrecio.column("#3",width=100,anchor="center")
+		self.tablePrecio.heading("#4",text="Unidad")
+		self.tablePrecio.column("#4",width=100,anchor="center")				
+		self.tablePrecio.place(x=10,y=70,width=520,height=100)		
 
+		self.llenar_tabla_Precio()
+		btn_EditarPrecio=Button(self.Top_precio,text='Editar',background="deepskyblue",border=3,width=15)		
+		btn_EditarPrecio.bind('<Button-1>',self.Top_UpdatePrecio)
+		btn_EditarPrecio.place(x=100,y=200)
+		btn_CancelarPrecio=Button(self.Top_precio,text='Cancelar',background="deepskyblue",border=3,width=15)
+		btn_CancelarPrecio['command']=self.Top_precio.destroy
+		btn_CancelarPrecio.place(x=300,y=200)
+		self.Top_precio.grab_set()
 
+	def llenar_tabla_Precio(self):
+		rows=self.obj_database.consultar_precio()	
+		if rows!=None:
+			for i in range(len(rows)):
+				self.tablePrecio.insert('','end',values=(rows[i][0],rows[i][3],rows[i][1],rows[i][2]))
 
+	def Top_UpdatePrecio(self,event):
+		codi=''
+		try:
+			codi=self.tablePrecio.item(self.tablePrecio.selection()[0],option='values')[0]
+		except Exception as e:
+			messagebox.showerror('Mensaje de Error','Seleccione un Item')
+
+		if len(codi)!=0:
+			#recuperando valores de la tabla
+			precio=self.tablePrecio.item(self.tablePrecio.selection()[0],option='values')[2]
+			cate=self.tablePrecio.item(self.tablePrecio.selection()[0],option='values')[1]			
+			#fin valores de la tabla
+			self.Top_UPrecio=Toplevel()
+			self.Top_UPrecio.title('Actualizar precio')
+			self.Top_UPrecio.geometry('500x200')
+			self.Top_UPrecio.resizable(0,0)
+			self.Top_UPrecio.grab_set()
+			etiqueta=Label(self.Top_UPrecio,text='Codigo',font=("Arial",14))
+			etiqueta.grid(row=0,column=0)
+			self.Entry_cod=ttk.Entry(self.Top_UPrecio,width=40)
+			self.Entry_cod.insert('end',f'{codi}')
+			self.Entry_cod.config(state='readonly')
+			self.Entry_cod.grid(row=0,column=1,columnspan=2,pady=7)
+
+			etiqueta=Label(self.Top_UPrecio,text='Categoria',font=("Arial",14))
+			etiqueta.grid(row=1,column=0)
+			self.Entry_cate=ttk.Entry(self.Top_UPrecio,width=40)
+			self.Entry_cate.insert('end',f'{cate}')
+			self.Entry_cate.config(state='readonly')
+			self.Entry_cate.grid(row=1,column=1,columnspan=2,pady=7)
+
+			etiqueta=Label(self.Top_UPrecio,text='Precio',font=("Arial",14))
+			etiqueta.grid(row=2,column=0)
+			self.Entry_precio=ttk.Entry(self.Top_UPrecio,width=40)
+			self.Entry_precio.insert('end',f'{precio}')			
+			self.Entry_precio.grid(row=2,column=1,columnspan=2,pady=7)
+
+			btn_GuardarPrecio=Button(self.Top_UPrecio,text='Guardar',background="deepskyblue",border=3,width=15)
+			btn_GuardarPrecio['command']=self.Actualizar_precio
+			btn_GuardarPrecio.grid(row=3,column=1,pady=10)
+			btn_CancelarPrecio=Button(self.Top_UPrecio,text='Cancelar',background="deepskyblue",border=3,width=15)
+			btn_CancelarPrecio['command']=self.Top_UPrecio.destroy
+			btn_CancelarPrecio.grid(row=3,column=2,pady=10)
+
+	def Actualizar_precio(self):
+		self.Entry_cod['state']='NORMAL'
+		cod=self.Entry_cod.get()
+		precio=self.Entry_precio.get()
+		#actualizando
+		self.obj_database.update_precio(cod,precio)
+		self.Top_UPrecio.destroy()
+		self.Top_precio.destroy()
 
 
 

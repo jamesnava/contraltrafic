@@ -177,7 +177,7 @@ class VMain(object):
 		AyudaM.add_command(label="Acerca de...",command= self.informacionSoftware)
 		#menú configuracion...
 		ConfiguracionM=tk.Menu(self.BarraMenu,tearoff=0)
-		ConfiguracionM.add_command(label="Configurar Precio")
+		ConfiguracionM.add_command(label="Configurar Precio",command=self.obj_TopGeneral.Top_Precio)
 		ConfiguracionM.add_command(label="Cargar Categorias Palta",command=self.obj_TopGeneral.categorias)
 		ConfiguracionM.add_command(label="Configurar Propietario",command=self.config_Usuario)
 		ConfiguracionM.add_command(label="Cargar Video",command=lambda:self.abrirDireccion(self.hilo))
@@ -336,7 +336,6 @@ class VMain(object):
 
 if __name__ == '__main__':
 	ventana=VMain()
-
 	ventana.ejecutar()
 	
 		
