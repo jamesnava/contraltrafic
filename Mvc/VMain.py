@@ -42,12 +42,12 @@ class VMain(object):
 		self.ventana.protocol("WM_DELETE_WINDOW",lambda:self.EventoMSalir(self.cap))
 		self.ventana.iconbitmap('../images/favicon.ico')
 		#self.ventana.resizable(0,0)
-		self.ventana.configure(bg="#DDFFDD")
+		self.ventana.configure(bg="#121F39")
 		#agregando marco izquierda
-		self.Marco=tk.Frame(self.ventana,width=130,height=650)
+		self.Marco=tk.Frame(self.ventana,width=130,height=int(screen_height*.84))
 		self.Marco.place(x=0,y=0)		
-		self.Marco.config(bg="lightblue")
-		self.Marco.config(relief='ridge')
+		self.Marco.config(bg="#121F39")
+		self.Marco.config(relief='groove')
 		self.Marco.config(bd=3)
 
 		#insertando los botones...
@@ -56,13 +56,20 @@ class VMain(object):
 		self.etiquetaTitulo1.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
 		self.etiquetaTitulo1.place(x=0,y=20)
 		#Abrir y cargar imagenes...
-		
-		self.openVideo=tk.Button(self.Marco,text="Buscar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
-		self.openVideo.configure(command=lambda:self.abrirDireccion(self.hilo),bd=5,overrelief="raised",width=9)
+		colorboton="#07755A"
+
+		self.openVideo=tk.Button(self.Marco,text="Buscar",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
+		self.openVideo.configure(command=lambda:self.abrirDireccion(self.hilo),bd=5,overrelief="sunken",width=9)
+
+		self.openVideo.bind('<Motion>',lambda event,param=self.openVideo:self.EventsMotions(event,param))
+		self.openVideo.bind('<Leave>',lambda event,param=self.openVideo:self.EventsLeave(event,param))
 		self.openVideo.place(x=5,y=60)
 		
-		self.reproducirO=tk.Button(self.Marco,text="Cargar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.reproducirO=tk.Button(self.Marco,text="Cargar",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
 		self.reproducirO.configure(command=self.abrirImagen,bd=5,overrelief="raised")
+
+		self.reproducirO.bind('<Motion>',lambda event,param=self.reproducirO:self.EventsMotions(event,param))
+		self.reproducirO.bind('<Leave>',lambda event,param=self.reproducirO:self.EventsLeave(event,param))
 		self.reproducirO.configure(width=9)
 		self.reproducirO.place(x=5,y=160)
 		#agregar separador...
@@ -75,54 +82,59 @@ class VMain(object):
 		self.etiquetaTitulo2.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
 		self.etiquetaTitulo2.place(x=0,y=255)
 
-		self.Bconfigurar=tk.Button(self.Marco,text="Selec. Cam.",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.Bconfigurar=tk.Button(self.Marco,text="Selec. Cam.",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
 		self.Bconfigurar.configure(width=9)
 		self.Bconfigurar.configure(command=self.obj_Camera.Top_Camera,bd=5,overrelief="raised")
+		self.Bconfigurar.bind('<Motion>',lambda event,param=self.Bconfigurar:self.EventsMotions(event,param))
+		self.Bconfigurar.bind('<Leave>',lambda event,param=self.Bconfigurar:self.EventsLeave(event,param))
 		self.Bconfigurar.place(x=5,y=300)
 
 		#play
-		self.BIniciar=tk.Button(self.Marco,text="Iniciar",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.BIniciar=tk.Button(self.Marco,text="Iniciar",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
 		self.BIniciar.configure(width=9,command=self.InicioVideo,bd=5,overrelief="raised")
-		self.BIniciar.place(x=5,y=395)
+		self.BIniciar.bind('<Motion>',lambda event,param=self.BIniciar:self.EventsMotions(event,param))
+		self.BIniciar.bind('<Leave>',lambda event,param=self.BIniciar:self.EventsLeave(event,param))
+		self.BIniciar.place(x=5,y=395)		
 
-		separador2Left=ttk.Separator(self.Marco,orient="horizontal")
-		separador2Left.place(x=0,y=490,relwidth=10)
-
-		self.BTerminar=tk.Button(self.Marco,text="Liberar Cam.",fg="#fff",bg="#232928",font=("",14),height=3,cursor="hand2")
+		self.BTerminar=tk.Button(self.Marco,text="Liberar Cam.",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
 		self.BTerminar.configure(command=self.CapturaImagen,bd=5,overrelief="raised")
+		self.BTerminar.bind('<Motion>',lambda event,param=self.BTerminar:self.EventsMotions(event,param))
+		self.BTerminar.bind('<Leave>',lambda event,param=self.BTerminar:self.EventsLeave(event,param))
 		self.BTerminar.configure(width=9)
-		self.BTerminar.place(x=5,y=510)
+		self.BTerminar.place(x=5,y=489)
 
-		separador3Left=ttk.Separator(self.Marco,orient="horizontal")
-
-		separador3Left.place(x=0,y=610,relwidth=5)
+		
 
 		#fin de izquierdo
 		#agregando marco principal
-		self.MarcoP=tk.Frame(self.ventana,width=int(screen_width*0.88),height=570)
+		self.MarcoP=tk.Frame(self.ventana,width=int(screen_width*0.89),height=int(screen_height*.75))
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
 		self.MarcoP.place(x=130,y=0)
 		#Label video
-		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original")
+		formato=('Times',14,"bold","italic")
+		
+		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original",font=formato)
 		etiqueta_titulo_cuadro1.place(x=22,y=1)
+
 		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen original",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
 		self.EtiquetaVideo.config(width="26",height="9")	
-		self.EtiquetaVideo.place(x=10,y=20)
+		self.EtiquetaVideo.place(x=10,y=30)
 		
 		#etiqueta imagen binarizada
-		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Imagen2")
-		etiqueta_titulo_cuadro2.place(x=395,y=1)
+		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Binarizada",font=formato)
+		etiqueta_titulo_cuadro2.place(x=420,y=1)
+
 		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen ",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaIBinarizada.config(width="26",height="9")
-		self.EtiquetaIBinarizada.place(x=420,y=20)
+		self.EtiquetaIBinarizada.place(x=420,y=30)
 
 		#etiqueta 3ra imagen
-		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Imagen Original")
-		etiqueta_titulo_cuadro3.place(x=775,y=1)
+		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Analisis de color",font=formato)
+		etiqueta_titulo_cuadro3.place(x=870,y=1)
 		self.EtiquetaImagen3=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaImagen3.config(width="26",height="9")
-		self.EtiquetaImagen3.place(x=850,y=20)
+		self.EtiquetaImagen3.place(x=850,y=30)
 		
 
 		btn_process=tk.Button(self.MarcoP,text='Procesar',border=3,width=25,cursor='hand2',background="deepskyblue")
@@ -141,17 +153,18 @@ class VMain(object):
 		self.Tabla_General.heading('#4',anchor='center')
 		self.Tabla_General.heading('#5',text='Clasificación')
 		self.Tabla_General.heading('#5',anchor='center')
-		self.Tabla_General.place(x=10,y=310,width=1150,height=200)
+		self.Tabla_General.place(x=10,y=370,width=1150,height=200)
 		#marco bottom
-		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.88),height=80)
+		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.89),height=80)
 		
 		self.MarcoBottom.config(bg="#19330E")
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
-		self.MarcoBottom.place(x=130,y=575)
+
+		self.MarcoBottom.place(x=130,y=int(screen_height*0.75))
 			
 		
-		#cantidad de tiempo
+		#Leyenda
 		font_=('Courier',16,'bold')
 		cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 		self.Cantidad_Palta=tk.Label(self.MarcoBottom,text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
@@ -167,7 +180,14 @@ class VMain(object):
 		self.BarraMenu()
 		#hilo
 		
-		#inicializar la camara...	
+		#inicializar la camara...
+
+	def EventsMotions(self,event,param):
+		param.config(relief='sunken',background='#94B2C7',fg='#000',bd=5)
+	def EventsLeave(self,event,param):
+		param.config(relief='raised',bd=5,background='#07755A',fg='#fff')
+
+
 	def BarraMenu(self):
 		self.BarraMenu=tk.Menu(self.ventana)
 		self.ventana.config(menu=self.BarraMenu)
@@ -201,14 +221,14 @@ class VMain(object):
 		self.BarraMenu.add_cascade(label="Ayuda",menu=AyudaM)
 	def vaciar_data(self):
 		self.obj_Estadisticas.Vaciar_Data(self.Cantidad_Palta)
-		#cantidad=self.obj_Estadisticas.Cantidad_Analizado()
-	
+
 	def config_Usuario(self):
 		dni=askstring('Configurar Usuario','Ingrese el numero de su Dni: \t\t')
 		if self.obj_Estadisticas.dni_user(dni)!=0:
 			self.EtiquetaUser['text']=dni
 		else:
 			msgI.showinfo('Alerta','DNI no encontrado, Registre en el apartado Personal')
+
 	def AbrirFotogramas(self,mirror=False):
 		if self.numeroCamara!=None:				
 			self.cap=cv2.VideoCapture(int(self.numeroCamara),cv2.CAP_DSHOW)											
@@ -238,12 +258,14 @@ class VMain(object):
 			msgI.showinfo('Alerta','Configure Propietario')
 
 	def CapturaImagen(self):		
-		self.hilo=True			
+		self.hilo=True	
+
 	def EventoMSalir(self,cap):
 		if self.cap==None:
 			self.ventana.destroy()
 		else:
-			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")	
+			msgI.showinfo("Alerta!","Antes Presione el Boton Parar!!")
+
 	def abrirDireccion(self,hilo):
 		if self.EtiquetaUser.cget('text')!='NULL':
 			hilo=True
@@ -252,6 +274,7 @@ class VMain(object):
 			msgI.showinfo('Alerta','Configure Propietario')
 
 	def abrirImagen(self):
+
 		if self.Address_video!=None:			
 			img_source=cv2.imread(self.Address_video)
 			img_source=cv2.cvtColor(img_source,cv2.COLOR_BGR2RGB)
@@ -322,6 +345,7 @@ class VMain(object):
 			self.Peso_Total.config(text=f"Peso Total: {peso} KG",font=font_,bg='#19330E',fg='white')
 		else:
 			msgI.showinfo('Notificacion','No se considera en ninguna categoria')
+			
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42,3)
 		ancho=round(ancho/13.42,3)
