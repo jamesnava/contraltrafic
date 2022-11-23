@@ -11,7 +11,7 @@ class UsuarioGUI(object):
 		self.Top_Insertar=Toplevel()
 		self.Top_Insertar.title('Ingresar Usuario')
 		self.Top_Insertar.geometry('390x250')
-
+		self.Top_Insertar.iconbitmap('../images/agregar.ico')
 		etiqueta=Label(self.Top_Insertar,text='Dni',font=("Arial",14))
 		etiqueta.grid(row=0,column=0)
 		self.Entry_Dni=ttk.Entry(self.Top_Insertar,width=40)
@@ -65,8 +65,9 @@ class UsuarioGUI(object):
 	def Top_ReportePersonal(self):
 		self.Windows_ReportePersonal=Toplevel()
 		self.Windows_ReportePersonal.geometry('860x450')
+		self.Windows_ReportePersonal.resizable(0,0)
 		self.Windows_ReportePersonal.title('Reporte del Personal')
-		
+		self.Windows_ReportePersonal.iconbitmap('../images/personal.ico')
 		etiqueta=Label(self.Windows_ReportePersonal,text='Buscar')
 		etiqueta.place(x=10,y=40)
 		self.Entry_sDni=ttk.Entry(self.Windows_ReportePersonal,width=40)

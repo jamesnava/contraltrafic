@@ -44,9 +44,9 @@ class VMain(object):
 		#self.ventana.resizable(0,0)
 		self.ventana.configure(bg="#121F39")
 		#agregando marco izquierda
-		self.Marco=tk.Frame(self.ventana,width=130,height=int(screen_height*.84))
-		self.Marco.place(x=0,y=0)		
-		self.Marco.config(bg="#121F39")
+		self.Marco=tk.Frame(self.ventana,width=130,height=int(screen_height*0.75))
+		self.Marco.place(x=10,y=10)		
+		#self.Marco.config(bg="#121F39")
 		self.Marco.config(relief='groove')
 		self.Marco.config(bd=3)
 
@@ -54,7 +54,7 @@ class VMain(object):
 		#titulo1 del menu izquierdo...
 		self.etiquetaTitulo1=tk.Label(self.Marco,text="Imágenes")
 		self.etiquetaTitulo1.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
-		self.etiquetaTitulo1.place(x=0,y=20)
+		self.etiquetaTitulo1.place(x=-5,y=20)
 		#Abrir y cargar imagenes...
 		colorboton="#07755A"
 
@@ -80,7 +80,7 @@ class VMain(object):
 		#titulo2
 		self.etiquetaTitulo2=tk.Label(self.Marco,text="En Vivo")
 		self.etiquetaTitulo2.configure(fg="#fff",bg="#BF4262",font=("Helvetica",14,"bold","italic"),width=11,height=1,bd=2,relief="groove")
-		self.etiquetaTitulo2.place(x=0,y=255)
+		self.etiquetaTitulo2.place(x=-5,y=255)
 
 		self.Bconfigurar=tk.Button(self.Marco,text="Selec. Cam.",fg="#fff",bg=colorboton,font=("",14),height=3,cursor="hand2")
 		self.Bconfigurar.configure(width=9)
@@ -110,11 +110,11 @@ class VMain(object):
 		self.MarcoP=tk.Frame(self.ventana,width=int(screen_width*0.89),height=int(screen_height*.75))
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
-		self.MarcoP.place(x=130,y=0)
+		self.MarcoP.place(x=int(screen_width*0.08),y=10)
 		#Label video
-		formato=('Times',14,"bold","italic")
+		formato=('Segoe Script',14,"bold","italic")
 		
-		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original",font=formato)
+		etiqueta_titulo_cuadro1=tk.Label(self.MarcoP,text="Imagen Original",fg='indigo',font=formato)
 		etiqueta_titulo_cuadro1.place(x=22,y=1)
 
 		self.EtiquetaVideo=tk.Label(self.MarcoP,text="Imagen original",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",bd=5,relief="sunken")
@@ -122,7 +122,7 @@ class VMain(object):
 		self.EtiquetaVideo.place(x=10,y=30)
 		
 		#etiqueta imagen binarizada
-		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Binarizada",font=formato)
+		etiqueta_titulo_cuadro2=tk.Label(self.MarcoP,text="Binarizada",fg='indigo',font=formato)
 		etiqueta_titulo_cuadro2.place(x=420,y=1)
 
 		self.EtiquetaIBinarizada=tk.Label(self.MarcoP,text="Imagen ",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
@@ -130,7 +130,7 @@ class VMain(object):
 		self.EtiquetaIBinarizada.place(x=420,y=30)
 
 		#etiqueta 3ra imagen
-		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Analisis de color",font=formato)
+		etiqueta_titulo_cuadro3=tk.Label(self.MarcoP,text="Analisis de color",font=formato,fg='indigo')
 		etiqueta_titulo_cuadro3.place(x=870,y=1)
 		self.EtiquetaImagen3=tk.Label(self.MarcoP,text="Imagen 2",font=('Times',14,"bold","italic"),bg="#232928",fg="#fff",relief="sunken")
 		self.EtiquetaImagen3.config(width="26",height="9")
@@ -147,7 +147,7 @@ class VMain(object):
 		self.Tabla_General.heading('#1',anchor='center')
 		self.Tabla_General.heading('#2',text='Ancho (cm)')
 		self.Tabla_General.heading('#2',anchor='center')
-		self.Tabla_General.heading('#3',text='Peso Estimado')
+		self.Tabla_General.heading('#3',text='Peso Estimado (Gramos)')
 		self.Tabla_General.heading('#3',anchor='center')
 		self.Tabla_General.heading('#4',text='Estado de Producto')
 		self.Tabla_General.heading('#4',anchor='center')
@@ -155,13 +155,13 @@ class VMain(object):
 		self.Tabla_General.heading('#5',anchor='center')
 		self.Tabla_General.place(x=10,y=370,width=1150,height=200)
 		#marco bottom
-		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.89),height=80)
+		self.MarcoBottom=tk.Frame(self.ventana,width=int(screen_width*0.967),height=80)
 		
 		self.MarcoBottom.config(bg="#19330E")
 		self.MarcoBottom.config(relief='ridge')
 		self.MarcoBottom.config(bd=3)
 
-		self.MarcoBottom.place(x=130,y=int(screen_height*0.75))
+		self.MarcoBottom.place(x=10,y=int(screen_height*0.77))
 			
 		
 		#Leyenda
@@ -290,61 +290,64 @@ class VMain(object):
 		
 					
 	def deteccion_bordes(self):
-		img=self.matriz_Image
-		img1=img				
-		img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				
-		#redimensionando las imagenes
-		img=self.objVideo.redimensionar_image(img)
-		img1=self.objVideo.redimensionar_image(img1)
+		if self.matriz_Image!=None:
+			img=self.matriz_Image
+			img1=img				
+			img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				
+			#redimensionando las imagenes
+			img=self.objVideo.redimensionar_image(img)
+			img1=self.objVideo.redimensionar_image(img1)
 
-		img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
-		largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
+			img=self.objVideo.detected_edges(self.objVideo.desenfoque(img))
+			largo,ancho,cordenadas=self.objVideo.encontrar_contorno(img)
 		
-		#prediccion del peso de la palta
-		peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42,3),round(ancho/13.42,3))		
+			#prediccion del peso de la palta
+			peso_palta=self.objVideo.Prediccion_peso(round(largo/13.42,3),round(ancho/13.42,3))		
 		
-		img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
-		img=self.objVideo.formato_Tkinter(img)
-		self.EtiquetaIBinarizada.config(width='320',height='240')
-		self.EtiquetaIBinarizada.configure(image=img)
-		self.EtiquetaIBinarizada.image=img
+			img=self.objVideo.dibujar_delimitador(img,cordenadas,largo,ancho)
+			img=self.objVideo.formato_Tkinter(img)
+			self.EtiquetaIBinarizada.config(width='320',height='240')
+			self.EtiquetaIBinarizada.configure(image=img)
+			self.EtiquetaIBinarizada.image=img
 
-		#analisis de color
-		img1,area_total,area_parcial=self.objVideo.analisis_Color(img1)
-		img1=self.objVideo.formato_Tkinter(img1)
-		self.EtiquetaImagen3.config(width='320',height='240')
-		self.EtiquetaImagen3.configure(image=img1)
-		self.EtiquetaImagen3.image=img1
-		porcentaje_Verde=area_parcial/area_total
-		porcentaje_Verde=round(porcentaje_Verde,2)
-		if porcentaje_Verde>1:
-			porcentaje_Verde=1
-		porcentaje_ZonaAfectada=1-porcentaje_Verde
+			#analisis de color
+			img1,area_total,area_parcial=self.objVideo.analisis_Color(img1)
+			img1=self.objVideo.formato_Tkinter(img1)
+			self.EtiquetaImagen3.config(width='320',height='240')
+			self.EtiquetaImagen3.configure(image=img1)
+			self.EtiquetaImagen3.image=img1
+			porcentaje_Verde=area_parcial/area_total
+			porcentaje_Verde=round(porcentaje_Verde,2)
+			if porcentaje_Verde>1:
+				porcentaje_Verde=1
+			porcentaje_ZonaAfectada=1-porcentaje_Verde
 		
 
-		#se formatea la fecha actual
-		fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
-		peso=self.obj_Estadisticas.peso_Total()
+			#se formatea la fecha actual
+			fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
+			peso=self.obj_Estadisticas.peso_Total()
 		
-		if peso==None:
-			peso=0.0
+			if peso==None:
+				peso=0.0
 		
-		peso=round(peso/1000,2)
-		codi_calibre,categoria=self.obj_Estadisticas.Asignacion_Calibre(peso_palta,round(porcentaje_ZonaAfectada*100,3))
+			peso=round(peso/1000,2)
+			codi_calibre,categoria=self.obj_Estadisticas.Asignacion_Calibre(peso_palta,round(porcentaje_ZonaAfectada*100,3))
 
-		if len(codi_calibre)!=0 and len(categoria)!=0:
-			#ingresando a la base de datos
-			datos=[ancho,largo,round(peso_palta[0][0],2),categoria,fecha,area_total,area_parcial,self.EtiquetaUser.cget('text'),codi_calibre]
-			self.obj_Estadisticas.Insertar_Data(datos)
-			cantidad=self.obj_Estadisticas.Cantidad_Analizado()
+			if len(codi_calibre)!=0 and len(categoria)!=0:
+				#ingresando a la base de datos
+				datos=[ancho,largo,round(peso_palta[0][0],2),categoria,fecha,area_total,area_parcial,self.EtiquetaUser.cget('text'),codi_calibre]
+				self.obj_Estadisticas.Insertar_Data(datos)
+				cantidad=self.obj_Estadisticas.Cantidad_Analizado()
 		
-			descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
-			self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,categoria)
-			font_=('Courier',16,'bold')
-			self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
-			self.Peso_Total.config(text=f"Peso Total: {peso} KG",font=font_,bg='#19330E',fg='white')
+				descripcion=f'La zona afectada representa el {round(porcentaje_ZonaAfectada*100,3)}%'
+				self.datos_Table(largo,ancho,round(peso_palta[0][0],1),descripcion,categoria)
+				font_=('Courier',16,'bold')
+				self.Cantidad_Palta.config(text=f"Analizados: {cantidad} Paltas",font=font_,bg='#19330E',fg='white')
+				self.Peso_Total.config(text=f"Peso Total: {peso} KG",font=font_,bg='#19330E',fg='white')
+			else:
+				msgI.showinfo('Notificacion','No se considera en ninguna categoria')
 		else:
-			msgI.showinfo('Notificacion','No se considera en ninguna categoria')
+			msgI.showinfo('Notificación','Seleccione una imagen')
 			
 	def datos_Table(self,largo,ancho,peso,descripcion,categoria):
 		largo=round(largo/13.42,3)

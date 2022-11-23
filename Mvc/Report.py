@@ -10,11 +10,12 @@ from tkinter import filedialog
 from tkcalendar import DateEntry
 import database
 import numpy as np
+import generaPDF
 
 class Reports:	
 	def __init__(self):
 		self.obj_consulta=database.database()	
-		
+		self.obj_pdf=generaPDF.Reporte()
 	def generar(self):
 		dateI=self.calI.get_date().strftime("%Y-%m-%d")
 		dateF=self.calF.get_date().strftime("%Y-%m-%d")
@@ -54,17 +55,21 @@ class Reports:
 		ax[1].set_ylabel('Cantidad')
 
 		#inicializar canvas...
-		self.canvas=FigureCanvasTkAgg(fig,master=self.top2)
+		contenedor=tk.Canvas(self.top2)
+		contenedor.place(x=10,y=10)
+		self.canvas=FigureCanvasTkAgg(fig,master=contenedor)
 		self.canvas.draw()
 		self.canvas.get_tk_widget().grid(row=3,column=0,columnspan=10)
 		#btn_imprimir...
 		self.btn_imprimir=tk.Button(self.top2,text="Exportar en PDF")
-		self.btn_imprimir.configure(width = 10, activebackground = "#33B5E5", overrelief="raised",bg="#232928",fg="white",font=('',12))
+		self.btn_imprimir['command']=lambda canvas=contenedor:self.obj_pdf.Reporte_(canvas)
+		self.btn_imprimir.configure(width = 10, activebackground = "#33B5E5", overrelief="raised",bg="#232928",fg="white",cursor='hand2',font=('',12))
 		self.btn_imprimir.grid(row=5,column=3)
 		
 	def Dibujar_Reporte(self):
 		self.top2=tk.Toplevel()
 		self.top2.title("Reporte Personal")
+		self.top2.iconbitmap('../images/statistic.ico')
 		self.top2.geometry("1000x600")
 		self.top2.resizable(0,0)
 		self.top2.grab_set()
