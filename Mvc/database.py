@@ -101,22 +101,23 @@ class database(object):
 			raise e
 	def mediciones_P(self,dni,fechai,fecha2):
 		try:
-			self.cursor.execute(f"SELECT * FROM tableMediciones WHERE dni='{dni}' AND fecha BETWEEN '{fechai}' AND '{fecha2}'")
-			#self.cursor.execute('SELECT * FROM tableMediciones')
+			self.cursor.execute(f"""SELECT SUM(TB.peso_M),CAL.denominacion FROM tableMediciones AS TB INNER JOIN calibre AS CAL ON
+			TB.cod_calibre=CAL.cod_calibre AND  TB.dni='{dni}' AND TB.fecha BETWEEN '{fechai}' AND '{fecha2}' GROUP BY CAL.denominacion""")		
 			rows=self.cursor.fetchall()
 
 		except Exception as e:
 			raise e
 		return rows
-	def mediciones_Update(self):
+	def mediciones_Count(self,dni,fechai,fecha2):
 		
 		try:
-			self.cursor.execute("UPDATE tableMediciones SET categoria='A'")
-			#self.cursor.execute('SELECT * FROM tableMediciones')
-			self.conection.commit()
+			self.cursor.execute(f"""SELECT COUNT(*),CAL.denominacion FROM tableMediciones AS TB INNER JOIN calibre AS CAL ON
+			TB.cod_calibre=CAL.cod_calibre AND  TB.dni='{dni}' AND TB.fecha BETWEEN '{fechai}' AND '{fecha2}' GROUP BY CAL.denominacion""")		
+			rows=self.cursor.fetchall()
 
 		except Exception as e:
 			raise e
+		return rows
 
 
 	def insertar_usuario(self,datos):
@@ -192,7 +193,6 @@ class database(object):
 			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
 		except Exception as e:
 			raise e
-
 
 
 

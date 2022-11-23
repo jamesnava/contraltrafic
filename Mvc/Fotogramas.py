@@ -20,12 +20,15 @@ class camara:
 		image=Image.fromarray(matrix)
 		image=ImageTk.PhotoImage(image)							
 		return image
+
 	def redimensionar_image(self,imagen):
 		img=cv2.resize(imagen,(int(imagen.shape[1]*0.5),int(imagen.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
 		return img
+
 	def desenfoque(self,img):		
 		img=cv2.GaussianBlur(img,(5,5),0)		
 		return img
+
 	def detected_edges(self,img):		
 		#binarizando
 		(T,thread)=cv2.threshold(img,30,255,cv2.THRESH_BINARY_INV)
@@ -38,6 +41,7 @@ class camara:
 		#detectando contorno
 		imagen_contorno=dilatado-cv2.erode(dilatado,kernel,iterations=1)
 		return imagen_contorno
+
 	def encontrar_contorno(self,imgBinary,):
 		(self.contorno,jerarquia)=cv2.findContours(imgBinary,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 		font=cv2.FONT_HERSHEY_SIMPLEX		
@@ -62,6 +66,7 @@ class camara:
 				ancho=lado1
 			#print(lado1,lado2)			
 		return largo,ancho,box
+
 	def dibujar_delimitador(self,img,box,largo,ancho):
 		cv2.line(img,(box[0][0],box[0][1]),(box[1][0],box[1][1]),(255,255,255),1)
 		cv2.line(img,(box[1][0],box[1][1]),(box[2][0],box[2][1]),(255,255,255),1)
@@ -69,27 +74,17 @@ class camara:
 		cv2.line(img,(box[3][0],box[3][1]),(box[0][0],box[0][1]),(255,255,255),1)
 		#ubicando el centro de masa			
 		return img
+
 	def analisis_Color(self,img):
-		#image=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+		
 		img_copy=img.copy()
 		binarizado,area_total=self.binarizacion_total(img_copy)	
 
-		'''lower_color=np.array([40,0,0])
-		upper_color=np.array([85,255,255])
-		img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
-		img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
-		img=cv2.cvtColor(img_yuv,cv2.COLOR_YUV2BGR)
-		adjusted = cv2.convertScaleAbs(img, alpha=1.5, beta=0)
-		image=cv2.cvtColor(adjusted,cv2.COLOR_BGR2HSV)
-		#mascara
-		mask=cv2.inRange(image,lower_color,upper_color)
-		image_bit=cv2.bitwise_and(image,image,mask=mask)'''
 		image_binary_green,area_parcial=self.optener_masqueraGreen(img)
 
 		verde=cv2.bitwise_and(img_copy,img_copy,mask=image_binary_green)
 		verde=cv2.cvtColor(verde,cv2.COLOR_BGR2HSV)
 		#area total
-	
 
 		return verde,area_total,area_parcial
 
@@ -99,6 +94,7 @@ class camara:
 		area=largo*ancho
 		peso=modelo.predict([[area]])
 		return peso
+		
 	def binarizacion_total(self,img):
 		gray_image=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 		gray_image_des=self.desenfoque(gray_image)
@@ -110,6 +106,7 @@ class camara:
 		imagenPalta=cv2.erode(dilatado,kernel,iterations=2)
 		area_total=self.area_(imagenPalta)
 		return imagenPalta,area_total
+
 	def optener_masqueraGreen(self,img):
 		img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
 		img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
@@ -138,6 +135,7 @@ class camara:
 			if cv2.contourArea(c)>100:
 				area+=cv2.contourArea(c)			
 		return area
+
 	def area_verde(self, binarizado):
 		(contorno,jerarquia)=cv2.findContours(binarizado,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 		cantidad=0

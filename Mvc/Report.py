@@ -9,6 +9,7 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkcalendar import DateEntry
 import database
+import numpy as np
 
 class Reports:	
 	def __init__(self):
@@ -19,36 +20,52 @@ class Reports:
 		dateF=self.calF.get_date().strftime("%Y-%m-%d")
 		dni=self.dni.get()		
 		rows=self.obj_consulta.mediciones_P(dni,dateI,dateF)
-		Categorias=['A','B','C']
-		PesoA=0
-		PesoB=0
-		PesoC=0
+		rows1=self.obj_consulta.mediciones_Count(dni,dateI,dateF)
+		Categorias=[]
+		pesos=[]
+		colores=[]		
 		for i in range(len(rows)):
-			if rows[i][5]=='A':
-				PesoA=PesoA+rows[i][3]
-			elif rows[i][5]=='B':
-				PesoB=PesoB+rows[i][3]
-			else:
-				PesoC=PesoC+rows[i][3]
-
-		pesos=[PesoA,PesoB,PesoC]
-		colores=['blue','green','red']
+			pesos.append(round(rows[i][0]/1000,2))
+			Categorias.append(rows[i][1])
+			color = tuple(np.random.choice(range(256), size=3)/256)
+			colores.append(color)	
+		
 	
-		fig,ax=plt.subplots(1,2,dpi=80,figsize=(13,4),sharey=True,facecolor='#00f9f844')
-		ax[0].bar(Categorias,pesos,color=colores)		
+		fig,ax=plt.subplots(nrows=1,ncols=2,figsize=(11,4))
+		#plt.title()
+		#GRAFICA PESOS VS CATEGORIA
+		ax[0].bar(Categorias,pesos,color=colores)
+		ax[0].set_title('Reporte del Peso vs Categorias')
+		ax[0].set_xlabel('Categorias')
+		ax[0].set_ylabel('Peso en KG')
+		#GRAFICA CANTIDAD VS CATEGORIA
+
+		CategoriasCount=[]
+		PaltasCount=[]
+		
+		for i in range(len(rows1)):
+			PaltasCount.append(rows1[i][0])
+			CategoriasCount.append(rows1[i][1])
+			
+		
+		ax[1].bar(CategoriasCount,PaltasCount,color=colores)
+		ax[1].set_title('Reporte del Cantidad vs Categorias')
+		ax[1].set_xlabel('Categorias')
+		ax[1].set_ylabel('Cantidad')
+
 		#inicializar canvas...
 		self.canvas=FigureCanvasTkAgg(fig,master=self.top2)
 		self.canvas.draw()
 		self.canvas.get_tk_widget().grid(row=3,column=0,columnspan=10)
 		#btn_imprimir...
-		self.btn_imprimir=tk.Button(self.top2,text="Imprimir")
-		self.btn_imprimir.configure(width = 10,height=4, activebackground = "#33B5E5", overrelief="raised",bg="#232928",fg="white",font=('',12))
-		self.btn_imprimir.grid(row=570,column=510)
+		self.btn_imprimir=tk.Button(self.top2,text="Exportar en PDF")
+		self.btn_imprimir.configure(width = 10, activebackground = "#33B5E5", overrelief="raised",bg="#232928",fg="white",font=('',12))
+		self.btn_imprimir.grid(row=5,column=3)
 		
 	def Dibujar_Reporte(self):
 		self.top2=tk.Toplevel()
 		self.top2.title("Reporte Personal")
-		self.top2.geometry("1000x500")
+		self.top2.geometry("1000x600")
 		self.top2.resizable(0,0)
 		self.top2.grab_set()
 		etiqueta=tk.Label(self.top2,text='Ingrese su dni: ')
