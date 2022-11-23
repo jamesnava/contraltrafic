@@ -290,7 +290,7 @@ class VMain(object):
 		
 					
 	def deteccion_bordes(self):
-		if self.matriz_Image!=None:
+		if len(self.matriz_Image)>0:
 			img=self.matriz_Image
 			img1=img				
 			img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				
