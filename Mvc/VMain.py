@@ -110,7 +110,7 @@ class VMain(object):
 		self.MarcoP=tk.Frame(self.ventana,width=int(screen_width*0.89),height=int(screen_height*.75))
 		self.MarcoP.config(relief='ridge')
 		self.MarcoP.config(bd=3)
-		self.MarcoP.place(x=int(screen_width*0.08),y=10)
+		self.MarcoP.place(x=int(screen_width*0.11),y=10)
 		#Label video
 		formato=('Segoe Script',14,"bold","italic")
 		

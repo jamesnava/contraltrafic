@@ -133,6 +133,15 @@ class database(object):
 		except Exception as e:
 			raise e
 		return rows
+
+	def consultar_User(self,dni):
+		try:
+			self.cursor.execute(f"""SELECT * FROM usuario WHERE dni='{dni}'""")
+			rows=self.cursor.fetchall()
+		except Exception as e:
+			raise e
+		return rows
+
 	def consultar_dni(self,dni):
 		try:
 			self.cursor.execute(f"SELECT count(*) FROM usuario WHERE dni='{dni}'")
@@ -178,9 +187,9 @@ class database(object):
 			self.conection.commit()
 		except Exception as e:
 			raise e
-	def consultar_precio(self):
+	def consultar_precio(self,deno):
 		try:
-			self.cursor.execute("""SELECT P.codigo,P.precio,P.Unidad,CAL.denominacion FROM precio AS P INNER JOIN calibre AS CAL ON P.codigo=CAL.cod_calibre""")
+			self.cursor.execute(f"""SELECT P.precio FROM precio AS P INNER JOIN calibre AS CAL ON P.codigo=CAL.cod_calibre AND CAL.denominacion='{deno}'""")
 			rows=self.cursor.fetchall()
 		except Exception as e:
 			raise e
@@ -193,7 +202,6 @@ class database(object):
 			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
 		except Exception as e:
 			raise e
-
 
 
 

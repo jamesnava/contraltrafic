@@ -16,6 +16,11 @@ class Reports:
 	def __init__(self):
 		self.obj_consulta=database.database()	
 		self.obj_pdf=generaPDF.Reporte()
+
+	def add_value_label(self,figura,x_list,y_list):
+		for i in range(1, len(x_list)+1):
+			
+			figura.text(i-1,y_list[i-1]/2,y_list[i-1])
 	def generar(self):
 		dateI=self.calI.get_date().strftime("%Y-%m-%d")
 		dateF=self.calF.get_date().strftime("%Y-%m-%d")
@@ -36,6 +41,7 @@ class Reports:
 		#plt.title()
 		#GRAFICA PESOS VS CATEGORIA
 		ax[0].bar(Categorias,pesos,color=colores)
+		self.add_value_label(ax[0],Categorias,pesos)
 		ax[0].set_title('Reporte del Peso vs Categorias')
 		ax[0].set_xlabel('Categorias')
 		ax[0].set_ylabel('Peso en KG')
@@ -46,23 +52,22 @@ class Reports:
 		
 		for i in range(len(rows1)):
 			PaltasCount.append(rows1[i][0])
-			CategoriasCount.append(rows1[i][1])
-			
+			CategoriasCount.append(rows1[i][1])			
 		
 		ax[1].bar(CategoriasCount,PaltasCount,color=colores)
+		self.add_value_label(ax[1],Categorias,PaltasCount)
 		ax[1].set_title('Reporte del Cantidad vs Categorias')
 		ax[1].set_xlabel('Categorias')
 		ax[1].set_ylabel('Cantidad')
-
+		fig.savefig('grafica.png')
 		#inicializar canvas...
-		contenedor=tk.Canvas(self.top2)
-		contenedor.place(x=10,y=10)
-		self.canvas=FigureCanvasTkAgg(fig,master=contenedor)
+		
+		self.canvas=FigureCanvasTkAgg(fig,master=self.top2)
 		self.canvas.draw()
 		self.canvas.get_tk_widget().grid(row=3,column=0,columnspan=10)
 		#btn_imprimir...
 		self.btn_imprimir=tk.Button(self.top2,text="Exportar en PDF")
-		self.btn_imprimir['command']=lambda canvas=contenedor:self.obj_pdf.Reporte_(canvas)
+		self.btn_imprimir['command']=lambda:self.obj_pdf.Reporte_(self.dni.get(),dateI,dateF,pesos,Categorias,self.top2)
 		self.btn_imprimir.configure(width = 10, activebackground = "#33B5E5", overrelief="raised",bg="#232928",fg="white",cursor='hand2',font=('',12))
 		self.btn_imprimir.grid(row=5,column=3)
 		
