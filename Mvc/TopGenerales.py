@@ -157,10 +157,10 @@ class Categoria(object):
 		self.Top_precio.grab_set()
 
 	def llenar_tabla_Precio(self):
-		rows=self.obj_database.consultar_precio()	
+		rows=self.obj_database.consultar_precios()	
 		if rows!=None:
 			for i in range(len(rows)):
-				self.tablePrecio.insert('','end',values=(rows[i][0],rows[i][3],rows[i][1],rows[i][2]))
+				self.tablePrecio.insert('','end',values=(rows[i][0],rows[i][1],rows[i][2],rows[i][3]))
 
 	def Top_UpdatePrecio(self,event):
 		codi=''
@@ -211,9 +211,19 @@ class Categoria(object):
 		cod=self.Entry_cod.get()
 		precio=self.Entry_precio.get()
 		#actualizando
-		self.obj_database.update_precio(cod,precio)
+		if self.is_float_digit(precio):
+			self.obj_database.update_precio(cod,precio)
+		else:
+			messagebox.showerror('Alerta','Valor no permitido')
 		self.Top_UPrecio.destroy()
 		self.Top_precio.destroy()
+
+	def is_float_digit(self,n: str) -> bool:
+		try:
+			float(n)
+			return True
+		except ValueError:
+			return False
 
 
 

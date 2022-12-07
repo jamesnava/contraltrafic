@@ -24,6 +24,7 @@ class VMain(object):
 		self.matriz_Image=None
 		self.cap=None
 		self.Address_video=None
+		self.imageComprobar=False
 		#creando objetos
 		self.obj_Camera=findCamera.BuscarCamara()
 		self.objVideo=Fotogramas.camara()
@@ -172,7 +173,7 @@ class VMain(object):
 		peso=self.obj_Estadisticas.peso_Total()
 		if peso==None:
 			peso=0		
-		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {peso/1000} KG",font=font_,bg='#19330E',fg='white')
+		self.Peso_Total=tk.Label(self.MarcoBottom,text=f"Peso Total: {round(peso/1000,2)} KG",font=font_,bg='#19330E',fg='white')
 		self.Peso_Total.place(x=300,y=20)	
 
 		self.EtiquetaUser=tk.Label(self.MarcoBottom,text="NULL",font=('Courier',14,"bold","italic"))
@@ -274,8 +275,8 @@ class VMain(object):
 			msgI.showinfo('Alerta','Configure Propietario')
 
 	def abrirImagen(self):
-
-		if self.Address_video!=None:			
+		if self.Address_video!=None:
+			self.imageComprobar=True
 			img_source=cv2.imread(self.Address_video)
 			img_source=cv2.cvtColor(img_source,cv2.COLOR_BGR2RGB)
 			#redimencionar para procesar
@@ -290,7 +291,7 @@ class VMain(object):
 		
 					
 	def deteccion_bordes(self):
-		if len(self.matriz_Image)>0:
+		if self.imageComprobar:
 			img=self.matriz_Image
 			img1=img				
 			img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				

@@ -22,8 +22,9 @@ class Reports:
 			
 			figura.text(i-1,y_list[i-1]/2,y_list[i-1])
 	def generar(self):
-		dateI=self.calI.get_date().strftime("%Y-%m-%d")
-		dateF=self.calF.get_date().strftime("%Y-%m-%d")
+		dateI=self.calI.get_date().strftime("%Y")+"-"+str(int(self.calI.get_date().strftime("%m")))+"-"+str(int(self.calI.get_date().strftime("%d")))
+		dateF=self.calF.get_date().strftime("%Y")+"-"+str(int(self.calF.get_date().strftime("%m")))+"-"+str(int(self.calF.get_date().strftime("%d")))
+		#print(dateI)
 		dni=self.dni.get()		
 		rows=self.obj_consulta.mediciones_P(dni,dateI,dateF)
 		rows1=self.obj_consulta.mediciones_Count(dni,dateI,dateF)

@@ -11,6 +11,8 @@ class UsuarioGUI(object):
 		self.Top_Insertar=Toplevel()
 		self.Top_Insertar.title('Ingresar Usuario')
 		self.Top_Insertar.geometry('390x250')
+		self.Top_Insertar.grab_set()
+		self.Top_Insertar.resizable(0,0)
 		self.Top_Insertar.iconbitmap('../images/agregar.ico')
 		etiqueta=Label(self.Top_Insertar,text='Dni',font=("Arial",14))
 		etiqueta.grid(row=0,column=0)

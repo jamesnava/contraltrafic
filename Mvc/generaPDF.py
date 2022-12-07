@@ -43,7 +43,7 @@ class Reporte(object):
 		xlist=[20,300,400,480,560]
 		ylist=[h-105,h-135,h-165,h-195,h-225]
 		libro.grid(xlist,ylist)
-		libro.drawString(30,h-250,f'MONTO TOTAL ESTIMADO: {str(precioT)} SOLES')
+		libro.drawString(30,h-250,f'MONTO TOTAL ESTIMADO: {str(round(precioT,2))} SOLES')
 
 		libro.drawImage("grafica.png", 0, h-550, width=550, height=250)	
 		libro.save()

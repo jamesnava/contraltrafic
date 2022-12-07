@@ -194,7 +194,13 @@ class database(object):
 		except Exception as e:
 			raise e
 		return rows
-
+	def consultar_precios(self):
+		try:
+			self.cursor.execute(f"""SELECT P.codigo,CAL.denominacion,P.precio,P.unidad FROM precio AS P INNER JOIN calibre AS CAL ON P.codigo=CAL.cod_calibre""")
+			rows=self.cursor.fetchall()
+		except Exception as e:
+			raise e
+		return rows
 	def update_precio(self,codigo,precio):		
 		try:
 			self.cursor.execute(f"""UPDATE precio SET precio={precio} WHERE codigo='{codigo}'""")
@@ -202,10 +208,24 @@ class database(object):
 			#messagebox.showinfo('Notificación','Se insertó correctamente!!')
 		except Exception as e:
 			raise e
+	def prueba(self):
+		try:
+			sql=f"""SELECT SUM(TB.peso_M),CAL.denominacion FROM tableMediciones AS TB INNER JOIN calibre AS CAL ON
+			TB.cod_calibre=CAL.cod_calibre AND TB.fecha BETWEEN '2022-11-1' AND '2022-12-5' GROUP BY CAL.denominacion"""
+
+			self.cursor.execute(sql)		
+			rows=self.cursor.fetchall()
+
+		except Exception as e:
+			raise e
+		return rows
 
 
 
-
+#obj=database()
+#print(obj.prueba())
+#print(obj.consultar_mediciones())
+#print(obj.mediciones_P('47584657','2022-12-1','2022-12-07'))
 
 
 
