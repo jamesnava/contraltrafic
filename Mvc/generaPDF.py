@@ -12,7 +12,7 @@ class Reporte(object):
 	def __init__(self):		
 		pdfmetrics.registerFont(TTFont('Vera','Vera.ttf'))
 		self.obj_consulta=database.database()		
-	def Reporte_(self,usuario,desde,hasta,pesos,categorias,top2):
+	def Reporte_(self,usuario,desde,hasta,pesos,categorias):
 		rows=self.obj_consulta.consultar_User(usuario)
 		datos=rows[0][1]+' '+rows[0][2]
 		libro=can.Canvas('Reporte.pdf',pagesize=A4)
@@ -46,9 +46,8 @@ class Reporte(object):
 		libro.drawString(30,h-250,f'MONTO TOTAL ESTIMADO: {str(round(precioT,2))} SOLES')
 
 		libro.drawImage("grafica.png", 0, h-550, width=550, height=250)	
-		libro.save()
-		messagebox.showinfo('Notificación','El reporte se genero correctamente')
-		top2.destroy()
+		libro.save()		
+		
 
 		
 		

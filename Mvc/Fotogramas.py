@@ -5,6 +5,9 @@ import tkinter.messagebox as msgI
 import numpy as np
 import sys
 import joblib
+import timeit
+import dataclasses
+import threadpoolctl
 from matplotlib import pyplot as plt
 class camara:
 	

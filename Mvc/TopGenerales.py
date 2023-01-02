@@ -10,7 +10,7 @@ class Categoria(object):
 		self.Top_Categoria=Toplevel()
 		self.Top_Categoria.title('Categorias')
 		self.Top_Categoria.geometry('900x250')
-		self.Top_Categoria.iconbitmap('../images/categoria.ico')
+		self.Top_Categoria.iconbitmap('images/categoria.ico')
 		self.table=ttk.Treeview(self.Top_Categoria,columns=('#1','#2','#3','#4','#5','#6','#7'),show='headings')
 		self.table.heading("#1",text="codigo")
 		self.table.column("#1",width=60,anchor="center")
@@ -134,7 +134,7 @@ class Categoria(object):
 	def Top_Precio(self):
 		self.Top_precio=Toplevel()
 		self.Top_precio.title('Precios por categorias')
-		self.Top_precio.iconbitmap('../images/precio.ico')
+		self.Top_precio.iconbitmap('images/precio.ico')
 		self.Top_precio.geometry('550x250')
 		self.tablePrecio=ttk.Treeview(self.Top_precio,columns=('#1','#2','#3','#4'),show='headings')
 		self.tablePrecio.heading("#1",text="Codigo")

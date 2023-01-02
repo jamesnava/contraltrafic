@@ -13,7 +13,7 @@ class UsuarioGUI(object):
 		self.Top_Insertar.geometry('390x250')
 		self.Top_Insertar.grab_set()
 		self.Top_Insertar.resizable(0,0)
-		self.Top_Insertar.iconbitmap('../images/agregar.ico')
+		self.Top_Insertar.iconbitmap('images/agregar.ico')
 		etiqueta=Label(self.Top_Insertar,text='Dni',font=("Arial",14))
 		etiqueta.grid(row=0,column=0)
 		self.Entry_Dni=ttk.Entry(self.Top_Insertar,width=40)
@@ -56,9 +56,12 @@ class UsuarioGUI(object):
 		datos=[dni,nombre,Apellidos,telefono,direccion]
 
 		if dni.isnumeric() and len(dni)==8:
-			self.obj_database.insertar_usuario(datos)
-			messagebox.showinfo('Alerta','Se insertó correctamente')
-			self.Top_Insertar.destroy()
+			if len(nombre)>0 and len(Apellidos)>0:
+				self.obj_database.insertar_usuario(datos)
+				messagebox.showinfo('Alerta','Se insertó correctamente')
+				self.Top_Insertar.destroy()
+			else:
+				messagebox.showerror('Error','Verifique los campos')
 
 		else:
 			messagebox.showinfo('Alerta','Verifique el campo Dni')
@@ -69,7 +72,7 @@ class UsuarioGUI(object):
 		self.Windows_ReportePersonal.geometry('860x450')
 		self.Windows_ReportePersonal.resizable(0,0)
 		self.Windows_ReportePersonal.title('Reporte del Personal')
-		self.Windows_ReportePersonal.iconbitmap('../images/personal.ico')
+		self.Windows_ReportePersonal.iconbitmap('images/personal.ico')
 		etiqueta=Label(self.Windows_ReportePersonal,text='Buscar')
 		etiqueta.place(x=10,y=40)
 		self.Entry_sDni=ttk.Entry(self.Windows_ReportePersonal,width=40)

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-"""cap=cv2.VideoCapture(1,cv2.CAP_DSHOW)
+cap=cv2.VideoCapture(1,cv2.CAP_DSHOW)
 #cap.set(3,1920)
 #cap.set(4,1080)
 
@@ -11,13 +11,13 @@ while True:
 	cv2.imshow('imagen',frame)
 	valor=cv2.waitKey(1)
 	if valor & 0xFF == ord('s'):
-		cv2.imwrite('image/image56.png',frame)
+		cv2.imwrite('image/image29.png',frame)
 	if valor==27:
 		break
 		cv2.destroyAllWindows()
-cap.release()"""
+cap.release()
 
-img = cv2.imread('image/image20.png')
+'''img = cv2.imread('image/image20.png')
 
 img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
 img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
@@ -57,4 +57,4 @@ print(cantidad)
 
 
 cv2.imshow('imagen valida',erosionado)
-cv2.waitKey()
+cv2.waitKey()'''

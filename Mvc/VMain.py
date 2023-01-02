@@ -13,12 +13,12 @@ import findCamera
 import MEstadisticas
 import usuario
 import TopGenerales
-from datetime import datetime
+import datetime
 
 class VMain(object):	
 	objVideo=None	
-	def __init__(self):
-		self.fecha_actual=datetime.now()
+	def __init__(self):		
+		self.fechap=datetime.date.today()
 		self.numeroCamara=None
 		self.hilo=False
 		self.matriz_Image=None
@@ -41,7 +41,7 @@ class VMain(object):
 		self.ventana.geometry(f'{int(screen_width*0.99)}x{int(screen_height*0.90)}+0+0')
 		#self.ventana.overrideredirect(1)
 		self.ventana.protocol("WM_DELETE_WINDOW",lambda:self.EventoMSalir(self.cap))
-		self.ventana.iconbitmap('../images/favicon.ico')
+		self.ventana.iconbitmap('images/favicon.ico')
 		#self.ventana.resizable(0,0)
 		self.ventana.configure(bg="#121F39")
 		#agregando marco izquierda
@@ -137,7 +137,8 @@ class VMain(object):
 		self.EtiquetaImagen3.config(width="26",height="9")
 		self.EtiquetaImagen3.place(x=850,y=30)
 		
-
+		#img_btnProcess=tk.PhotoImage(file=r'../images/process_btn.png')
+		#img_btnProcess.subsample(3,3)
 		btn_process=tk.Button(self.MarcoP,text='Procesar',border=3,width=25,cursor='hand2',background="deepskyblue")
 		btn_process.config(command=self.deteccion_bordes)
 		btn_process.place(x=500,y=280)
@@ -325,7 +326,9 @@ class VMain(object):
 		
 
 			#se formatea la fecha actual
-			fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
+			#fecha=f'{self.fecha_actual.year}-{self.fecha_actual.month}-{self.fecha_actual.day}'
+			fecha=self.fechap
+			#print(self.fechap)
 			peso=self.obj_Estadisticas.peso_Total()
 		
 			if peso==None:
@@ -368,8 +371,7 @@ class VMain(object):
 										"Libreria: Numpy\n"
 										"Libreria: PIL,tkinter\n"
 										"version del software: v1.1\n")
-	def ejecutar(self):
-		
+	def ejecutar(self):		
 		self.ventana.mainloop()
 
 if __name__ == '__main__':

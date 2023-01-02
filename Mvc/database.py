@@ -124,6 +124,7 @@ class database(object):
 		try:
 			self.cursor.execute(f"""INSERT INTO usuario VALUES('{datos[0]}','{datos[1]}','{datos[2]}','{datos[3]}','{datos[4]}')""")
 			self.conection.commit()
+			#self.conection.close()
 		except Exception as e:
 			raise e
 	def consultar_Usuario(self):
@@ -210,22 +211,27 @@ class database(object):
 			raise e
 	def prueba(self):
 		try:
-			sql=f"""SELECT SUM(TB.peso_M),CAL.denominacion FROM tableMediciones AS TB INNER JOIN calibre AS CAL ON
-			TB.cod_calibre=CAL.cod_calibre AND TB.fecha BETWEEN '2022-11-1' AND '2022-12-5' GROUP BY CAL.denominacion"""
-
+			#sql=f"""SELECT SUM(TB.peso_M),CAL.denominacion FROM tableMediciones AS TB INNER JOIN calibre AS CAL ON
+			#TB.cod_calibre=CAL.cod_calibre AND TB.fecha BETWEEN '2022-01-01' AND '2022-01-18' GROUP BY CAL.denominacion"""
+			sql="SELECT COUNT(*) FROM tableMediciones WHERE fecha<'2022-02-20'"
 			self.cursor.execute(sql)		
 			rows=self.cursor.fetchall()
 
 		except Exception as e:
 			raise e
 		return rows
+	def updatev(self):
+		sql="UPDATE tableMediciones SET fecha='2022-12-06' WHERE id_M=16"
+		self.cursor.execute(sql)
+		self.conection.commit()
 
 
 
 #obj=database()
-#print(obj.prueba())
-#print(obj.consultar_mediciones())
-#print(obj.mediciones_P('47584657','2022-12-1','2022-12-07'))
+#obj.updatev()
+#rows=obj.prueba()
+#print(rows)
+
 
 
 
