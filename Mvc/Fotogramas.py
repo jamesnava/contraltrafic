@@ -29,15 +29,19 @@ class camara:
 		return img
 
 	def desenfoque(self,img):		
-		img=cv2.GaussianBlur(img,(5,5),0)		
+		img=cv2.GaussianBlur(img,(5,5),0)			
 		return img
 
-	def detected_edges(self,img):		
+	def detected_edges(self,img):
+		#histograma=cv2.calcHist([img],[0],None,[256],[0,256])
+		#plt.plot(histograma,color='gray')
+		#plt.show()
 		#binarizando
-		(T,thread)=cv2.threshold(img,30,255,cv2.THRESH_BINARY_INV)
-		(T1,thread1)=cv2.threshold(img,65,255,cv2.THRESH_BINARY_INV)
+		(T,thread)=cv2.threshold(img,100,255,cv2.THRESH_BINARY_INV)
+		(T1,thread1)=cv2.threshold(img,150,255,cv2.THRESH_BINARY_INV)
 		#realizar el bitwi
 		imagen_final=cv2.bitwise_or(thread,thread1)
+
 		#dilatacion
 		kernel=np.ones((5,5),np.uint8)
 		dilatado=cv2.dilate(imagen_final,kernel,iterations=2)
@@ -111,14 +115,18 @@ class camara:
 		return imagenPalta,area_total
 
 	def optener_masqueraGreen(self,img):
+		imgo=img.copy()
+		#mejora el contraste 		
 		img_yuv=cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
 		img_yuv[:,:,0]=cv2.equalizeHist(img_yuv[:,:,0])
 		img=cv2.cvtColor(img_yuv,cv2.COLOR_YUV2BGR)
 		adjusted = cv2.convertScaleAbs(img, alpha=1.5, beta=0)
-		#image=cv2.cvtColor(adjusted,cv2.COLOR_BGR2HSV)
+
+		#cambiar a escala de grises y se suavizaa la imagen
 		img1=cv2.cvtColor(adjusted,cv2.COLOR_BGR2GRAY)
 		img_gauss=cv2.GaussianBlur(img1,(5,5),0)
 		#(T,thread)=cv2.threshold(img_gauss,50,255,cv2.THRESH_BINARY_INV)
+		
 		(T,thread2)=cv2.threshold(img_gauss,94,255,cv2.THRESH_BINARY_INV)
 		res=cv2.bitwise_and(img,img,mask=thread2)
 		res=cv2.cvtColor(res,cv2.COLOR_BGR2HSV)
@@ -141,6 +149,7 @@ class camara:
 
 	def area_verde(self, binarizado):
 		(contorno,jerarquia)=cv2.findContours(binarizado,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+		cv2.imshow('parte verde',binarizado)
 		cantidad=0
 		for c in contorno:			
 			cantidad+=cv2.contourArea(c)

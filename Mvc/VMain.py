@@ -284,7 +284,7 @@ class VMain(object):
 			img_source=cv2.resize(img_source,(640,480),interpolation=cv2.INTER_AREA)
 			self.matriz_Image=img_source			
 			img_source=cv2.resize(img_source,(int(img_source.shape[1]*0.5),int(img_source.shape[0]*0.5)),interpolation=cv2.INTER_AREA)
-			
+			#cv2.imshow('titulo111',img_source)
 			img_source=self.objVideo.lectura(img_source)
 			self.EtiquetaVideo.config(width="320",height="240")
 			self.EtiquetaVideo.configure(image=img_source)
@@ -294,7 +294,7 @@ class VMain(object):
 	def deteccion_bordes(self):
 		if self.imageComprobar:
 			img=self.matriz_Image
-			img1=img				
+			img1=img.copy()				
 			img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)				
 			#redimensionando las imagenes
 			img=self.objVideo.redimensionar_image(img)
