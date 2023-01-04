@@ -149,7 +149,7 @@ class camara:
 
 	def area_verde(self, binarizado):
 		(contorno,jerarquia)=cv2.findContours(binarizado,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-		cv2.imshow('parte verde',binarizado)
+		
 		cantidad=0
 		for c in contorno:			
 			cantidad+=cv2.contourArea(c)
