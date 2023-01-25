@@ -19,9 +19,12 @@ class camara:
 		self.image=Image.fromarray(self.frame)
 		self.image=ImageTk.PhotoImage(self.image)							
 		return self.image
+
 	def formato_Tkinter(self,matrix):
 		image=Image.fromarray(matrix)
-		image=ImageTk.PhotoImage(image)							
+
+		image=ImageTk.PhotoImage(image)
+
 		return image
 
 	def redimensionar_image(self,imagen):
@@ -33,10 +36,7 @@ class camara:
 		return img
 
 	def detected_edges(self,img):
-		#histograma=cv2.calcHist([img],[0],None,[256],[0,256])
-		#plt.plot(histograma,color='gray')
-		#plt.show()
-		#binarizando
+			
 		(T,thread)=cv2.threshold(img,100,255,cv2.THRESH_BINARY_INV)
 		(T1,thread1)=cv2.threshold(img,150,255,cv2.THRESH_BINARY_INV)
 		#realizar el bitwi
